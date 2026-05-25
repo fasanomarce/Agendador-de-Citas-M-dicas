@@ -1,0 +1,81 @@
+@import "tailwindcss";
+
+@theme {
+  --color-clinica-50: hsl(180, 60%, 98%);
+  --color-clinica-100: hsl(180, 65%, 95%);
+  --color-clinica-200: hsl(180, 60%, 88%);
+  --color-clinica-300: hsl(180, 55%, 78%);
+  --color-clinica-400: hsl(180, 50%, 65%);
+  --color-clinica-500: hsl(180, 70%, 45%);
+  --color-clinica-600: hsl(180, 75%, 38%);
+  --color-clinica-700: hsl(180, 80%, 30%);
+  --color-clinica-800: hsl(215, 80%, 22%);
+  --color-clinica-900: hsl(215, 80%, 15%);
+  --color-clinica-950: hsl(215, 85%, 10%);
+  --color-paciente-soft: hsl(220, 15%, 97%);
+  --color-paciente-dark: hsl(215, 25%, 27%);
+  
+  --font-sans: 'Outfit', 'Inter', 'system-ui', 'sans-serif';
+  
+  --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+  --shadow-glass-hover: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+  --shadow-premium: 0 20px 40px -15px rgba(15, 23, 42, 0.05);
+}
+
+body {
+  background-color: hsl(220, 15%, 97%);
+  color: hsl(215, 25%, 27%);
+}
+
+/* Glassmorphism Classes */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.glass-panel-dark {
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.02);
+}
+
+/* Custom Animations */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Scrollbar Customization */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(180, 20%, 80%);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(180, 50%, 65%);
+}

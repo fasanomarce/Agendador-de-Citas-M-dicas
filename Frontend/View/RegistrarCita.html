@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar Cita</title>
+    <link rel="stylesheet" href="styles.css">
+
+</head>
+
+<body>
+
+    <header class="header">
+        <h1 class="header_logo">Agendador de Citas</h1>
+        
+        <!-- Navegación principal -->
+        <nav class="nav" id="mainNav" aria-label="Navegación principal">
+            <ul class="nav__list">
+                <li class="nav__item"><a href="MenuCitas.html" class="nav__link">Menú Principal</a></li>
+                <li class="nav__item"><a href="perfil.html" class="nav__link">Mi Perfil</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main>
+        <div class="form-container">
+            <p>Ingrese sus datos para reservar su cita.</p>
+
+            <form id="registroCitaForm">
+
+                <!-- ================= PASO 1 ================= -->
+                
+                <div id="paso1" class="paso activo">
+                    <fieldset>
+                        <legend>Paso 1: Datos Personales y Comentarios</legend>
+                        
+                        <label for="nombre">Nombre</label><br>
+                        <input type="text" id="nombre" name="nombre" placeholder="Tu nombre" required><br>
+                        
+                        <label for="apellido">Apellido</label><br>
+                        <input type="text" id="apellido" name="apellido" placeholder="Tu apellido" required><br>
+
+                        <label for="motivo">Comentarios</label><br>
+                        <textarea id="motivo" name="motivo" placeholder="Describa brevemente el motivo de su cita" rows="3" required></textarea><br>
+                    </fieldset>
+
+                    
+                    <button type="button" id="btnContinuar1">Continuar</button>
+                </div>
+
+                <!-- ================= PASO 2 ================= -->
+                
+                <div id="paso2" class="paso">
+                    <fieldset>
+                        <legend>Paso 2: Lista de Especialistas</legend>
+
+                        <label for="doctor">Seleccione un Especialista y confirme:</label><br>
+                        <input type="text" id="doctor" name="doctor" list="lista-doctores" required placeholder="Buscar especialista..."><br>
+                        
+                        <datalist id="lista-doctores">
+                            <option value="Dr. Juan Pérez"></option>
+                            <option value="Dra. María Gómez"></option>
+                            <option value="Dr. Carlos López"></option>
+                            <option value="Dra. Ana Silva"></option>
+                            <option value="Dr. Luis Torres"></option>
+                        </datalist>
+                    </fieldset>
+
+                    <button type="button" id="btnContinuar2">Continuar</button>
+                </div>
+                
+                <!-- ================= PASO 3 ================= -->
+                <div id="paso3" class="paso">
+                    <fieldset>
+                        <legend>Paso 3: Fechas y Horas Disponibles</legend>
+                        
+                        <label for="fecha">Escoge una fecha:</label><br>
+                        <input type="date" id="fecha" name="fecha" required><br>
+
+                        <label for="hora">Escoge una hora:</label><br>
+                        <select id="hora" name="hora" required>
+                            <option value="">Seleccione una hora...</option>
+                            <option value="08:00">08:00 AM</option>
+                            <option value="09:00">09:00 AM</option>
+                            <option value="10:00">10:00 AM</option>
+                            <option value="11:00">11:00 AM</option>
+                            <option value="14:00">02:00 PM</option>
+                            <option value="15:00">03:00 PM</option>
+                            <option value="16:00">04:00 PM</option>
+                        </select><br>
+                    </fieldset>
+                
+                    <button type="submit">Guardar Reservación</button>
+                </div>        
+            </form>
+        </div>
+
+    </main>
+
+    <!-- Controlador de la vista  -->
+    <script src="../ViewHandling/CitaView.js"></script>
+
+</body>
+</html>

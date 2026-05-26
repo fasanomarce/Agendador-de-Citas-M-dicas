@@ -1,0 +1,218 @@
+
+/*=======================================================
+                     1. REGISTRAR CITA
+=======================================================*/
+
+/* Estilos Globales */
+body {
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: #f0f4f8;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+}
+
+/* Encabezado */
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background-color: #0056b3;
+    color: white;
+    padding: 25px;
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.37);
+    display: flex;
+    justify-content: space-between; /* Centra el logo a la izq y los botones a la der */
+    align-items: center; /* Centra verticalmente */
+    flex-wrap: wrap;
+}
+
+/* Contenedor de navegación para los botones en el header */
+.nav {
+    display: flex;
+    align-items: center;
+}
+
+.nav__list {
+    display: flex;
+    gap: 15px; /* Espacio entre los enlaces */
+    list-style: none; /* Quita los puntos de la lista */
+    margin: 0;
+    padding: 0;
+}
+
+.nav__link {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 8px 12px;
+    border-radius: 6px;
+    background-color: rgba(255, 255, 255, 0.1);
+    transition: background-color 0.3s ease;
+}
+
+.nav__link:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.header_logo {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 600;
+}
+
+/* Contenedor Principal */
+.form-container {
+    background: white;
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0px 20px 30px rgba(0, 0, 0, 0.5);
+}
+
+.form-container p {
+    text-align: center;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+/* Cajas de campo (Fieldsets) */
+fieldset {
+    border: 2px solid #e1e8ed;
+    border-radius: 8px;
+    padding: 25px;
+    margin-bottom: 25px;
+    background-color: #fafbfc;
+    transition: all 0.3s ease;
+    
+}
+
+fieldset:hover {
+    border-color: #538bd370;
+    box-shadow: 0 0 0 3px #538bd370;
+}
+
+legend {
+    background: #0056b3;
+    color: white;
+    padding: 6px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);    
+}
+
+/* Etiquetas e Inputs */
+label {
+    font-weight: 600;
+    color: #444;
+    display: inline-block;
+    margin-bottom: 8px;
+    margin-top: 10px;
+}
+
+input[type="text"],
+input[type="date"],
+select,
+
+textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    background-color: #fff;
+    resize: none;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
+}
+
+input[type="text"]:focus,
+input[type="date"]:focus,
+select:focus,
+textarea:focus {
+    border-color: #0056b3;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.15);
+}
+
+/* Botones */
+button {
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;   
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-right: 10px;
+}
+
+/* Botón Continuar / Confirmar */
+button[id^="btnContinuar"], button[type="submit"] {
+    background-color: #28a745;
+    color: white;
+    box-shadow: 0 4px 6px rgba(40, 167, 69, 0.2);
+}
+
+button[id^="btnContinuar"]:hover, button[type="submit"]:hover {
+    background-color: #218838;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(40, 167, 69, 0.3);
+}
+
+/* Botón Salir */
+button[id="btnSalir"] {
+    background-color: #f8f9fa;
+    color: #dc3545;
+    border: 1px solid #dc3545;
+}
+
+button[id="btnSalir"]:hover {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* ====== ANIMACIONES DE TRANSICIÓN ====== */
+.paso {
+    display: none; /* Oculto por defecto */
+}
+
+/* La clase que muestra y anima el paso */
+.paso.activo {
+    display: block;
+    animation: deslizarAbajo 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.salir-div {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+}
+
+@keyframes deslizarAbajo {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .form-container {
+        margin: 20px;
+        padding: 20px;
+    }
+    button {
+        width: 100%;
+        margin-bottom: 15px;
+        margin-right: 0;
+    }
+}

@@ -220,6 +220,93 @@
                 </ul>
             </div>
 
+            <!-- Panel de Administración (Solo se muestra si es Administrador) -->
+            <div id="panelAdministrador" class="buscador-panel" style="display: none; background-color: #f0f8ff; border-color: #b0c4de;">
+                <h3 style="color: #0056b3;">Panel de Administración: Alta de Personal</h3>
+                <p style="color: #555; font-size: 14px; margin-bottom: 20px;">Utilice este formulario seguro para dar de alta en el sistema a Doctores, Secretarios, Administradores o Pacientes.</p>
+                
+                <form id="adminRegForm" novalidate>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                        <div class="input-group">
+                            <label for="adminRol">Rol a Registrar*</label>
+                            <select id="adminRol" required>
+                                <option value="">Seleccione un rol...</option>
+                                <option value="Especialista">Doctor (Especialista)</option>
+                                <option value="Secretario">Secretario Clínico</option>
+                                <option value="Administrador">Administrador</option>
+                                <option value="Paciente">Paciente</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="adminCedula">Cédula / ID*</label>
+                            <input type="text" id="adminCedula" placeholder="Cédula (mínimo 8 números)" required>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                        <div class="input-group">
+                            <label for="adminNombre">Nombre*</label>
+                            <input type="text" id="adminNombre" placeholder="Nombre" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="adminApellido">Apellido*</label>
+                            <input type="text" id="adminApellido" placeholder="Apellido" required>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                        <div class="input-group">
+                            <label for="adminCorreo">Correo Electrónico*</label>
+                            <input type="text" id="adminCorreo" placeholder="correo@clinica.com" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="adminContrasena">Contraseña Temporal*</label>
+                            <input type="password" id="adminContrasena" placeholder="Contraseña de acceso" style="width: 100%; padding: 12px 15px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 15px;" required>
+                        </div>
+                    </div>
+
+                    <!-- Campos específicos de Especialista -->
+                    <div id="adminCamposEspecialista" style="display: none; border-top: 1px dashed #b0c4de; padding-top: 15px; margin-bottom: 15px; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="input-group">
+                            <label for="adminEspecialidad">Especialidad Médica*</label>
+                            <select id="adminEspecialidad">
+                                <option value="">Seleccione especialidad...</option>
+                                <option value="Cardiología">Cardiología</option>
+                                <option value="Pediatría">Pediatría</option>
+                                <option value="Dermatología">Dermatología</option>
+                                <option value="Odontología">Odontología</option>
+                                <option value="Neurología">Neurología</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="adminRolClinico">Rol / Cargo Clínico</label>
+                            <input type="text" id="adminRolClinico" placeholder="Ej. Médico Titular">
+                        </div>
+                    </div>
+
+                    <!-- Campos específicos de Secretario -->
+                    <div id="adminCamposSecretario" style="display: none; border-top: 1px dashed #b0c4de; padding-top: 15px; margin-bottom: 15px; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="input-group">
+                            <label for="adminArea">Área Asignada (Consultorio)*</label>
+                            <select id="adminArea">
+                                <option value="">Seleccione área asignada...</option>
+                                <option value="Cardiología">Cardiología</option>
+                                <option value="Pediatría">Pediatría</option>
+                                <option value="Dermatología">Dermatología</option>
+                                <option value="Odontología">Odontología</option>
+                                <option value="Neurología">Neurología</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="adminRolAdmin">Cargo Administrativo</label>
+                            <input type="text" id="adminRolAdmin" placeholder="Ej. Recepción Dpto.">
+                        </div>
+                    </div>
+
+                    <button type="submit" id="btnAdminRegistrar" style="background-color: #0056b3; color: white; box-shadow: 0 4px 6px rgba(0, 86, 179, 0.2); width: 100%; border-radius: 20px; font-weight: bold;">✓ Dar de Alta Personal</button>
+                </form>
+            </div>
+
             <!-- Formulario de Edición -->
             <h2 id="tituloFormulario">Modificar Mis Datos de Contacto</h2>
             <p id="subtituloFormulario">Actualice su información de contacto. Recuerde que el ID y Rol son datos inalterables de seguridad.</p>

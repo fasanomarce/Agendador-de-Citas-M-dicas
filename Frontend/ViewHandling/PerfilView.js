@@ -25,12 +25,28 @@ class PerfilView {
         this.loader = document.getElementById('loader');
         this.toast = document.getElementById('toast');
 
-        // Paneles específicos de Rol
+        // Paneles específicos de Secretario
         this.panelSecretario = document.getElementById('panelSecretario');
         this.buscadorPaciente = document.getElementById('buscadorPaciente');
         this.listaPacientes = document.getElementById('listaPacientes');
         this.tituloFormulario = document.getElementById('tituloFormulario');
         this.subtituloFormulario = document.getElementById('subtituloFormulario');
+
+        // Panel específico de Administrador (NUEVO)
+        this.panelAdministrador = document.getElementById('panelAdministrador');
+        this.adminRegForm = document.getElementById('adminRegForm');
+        this.adminRol = document.getElementById('adminRol');
+        this.adminCedula = document.getElementById('adminCedula');
+        this.adminNombre = document.getElementById('adminNombre');
+        this.adminApellido = document.getElementById('adminApellido');
+        this.adminCorreo = document.getElementById('adminCorreo');
+        this.adminContrasena = document.getElementById('adminContrasena');
+        this.adminCamposEspecialista = document.getElementById('adminCamposEspecialista');
+        this.adminEspecialidad = document.getElementById('adminEspecialidad');
+        this.adminRolClinico = document.getElementById('adminRolClinico');
+        this.adminCamposSecretario = document.getElementById('adminCamposSecretario');
+        this.adminArea = document.getElementById('adminArea');
+        this.adminRolAdmin = document.getElementById('adminRolAdmin');
 
         this.init();
     }
@@ -65,6 +81,22 @@ class PerfilView {
 
             // Configurar eventos del buscador
             this.buscadorPaciente.addEventListener('input', () => this.filtrarPacientes());
+        } else if (this.usuarioActivo.rol === 'Administrador') {
+            // Configurar vistas de Administrador (NUEVO)
+            this.sideRol.innerText = 'Administrador';
+            this.sideRol.style.backgroundColor = '#0056b3';
+            this.sideRol.style.color = 'white';
+            this.inputRol.value = 'Administrador';
+            
+            // Ocultar edición de perfiles ajenos (solo se edita a sí mismo en el formulario base)
+            this.panelSecretario.style.display = 'none';
+
+            // Mostrar el panel de administración
+            this.panelAdministrador.style.display = 'block';
+            
+            // Asignar eventos de rol dinámicos en alta de personal
+            this.adminRol.addEventListener('change', () => this.toggleCamposAdminRegistro());
+            this.adminRegForm.addEventListener('submit', (e) => this.handleAdminSubmit(e));
         } else {
             // Configurar vistas de Paciente
             this.sideRol.innerText = 'Paciente';
@@ -75,7 +107,7 @@ class PerfilView {
             this.obtenerDatosFrescos(this.usuarioActivo.id);
         }
 
-        // 5. Enlazar eventos de validación inline
+        // 5. Enlazar eventos de validación inline para formulario común
         this.inputCorreo.addEventListener('input', () => this.validarCorreo());
         this.inputTelefono.addEventListener('input', () => this.validarTelefono());
         
@@ -108,9 +140,11 @@ class PerfilView {
 
         // Limpiar clases de validación previas
         [this.inputCorreo, this.inputTelefono, this.inputNombre, this.inputApellido].forEach(el => {
-            el.classList.remove('input-success', 'input-error');
-            const fb = document.getElementById(`${el.id}Feedback`);
-            if (fb) fb.style.display = 'none';
+            if (el) {
+                el.classList.remove('input-success', 'input-error');
+                const fb = document.getElementById(`${el.id}Feedback`);
+                if (fb) fb.style.display = 'none';
+            }
         });
     }
 
@@ -214,6 +248,117 @@ class PerfilView {
         this.filtrarPacientes();
     }
 
+    // Mostrar/ocultar campos dinámicos en el alta de personal del Administrador
+    toggleCamposAdminRegistro() {
+        const rol = this.adminRol.value;
+
+        if (rol === 'Especialista') {
+            this.adminCamposEspecialista.style.display = 'grid';
+            this.adminCamposSecretario.style.display = 'none';
+            this.adminEspecialidad.required = true;
+        } else if (rol === 'Secretario') {
+            this.adminCamposSecretario.style.display = 'grid';
+            this.adminCamposEspecialista.style.display = 'none';
+            this.adminArea.required = true;
+        } else {
+            this.adminCamposEspecialista.style.display = 'none';
+            this.adminCamposSecretario.style.display = 'none';
+            this.adminEspecialidad.required = false;
+            this.adminArea.required = false;
+        }
+    }
+
+    // Procesar alta de personal (Submit del Administrador)
+    handleAdminSubmit(e) {
+        e.preventDefault();
+
+        // Validaciones del alta administrativa
+        const rol = this.adminRol.value;
+        const cedula = this.adminCedula.value.trim();
+        const nombre = this.adminNombre.value.trim();
+        const apellido = this.adminApellido.value.trim();
+        const correo = this.adminCorreo.value.trim();
+        const contrasena = this.adminContrasena.value;
+
+        if (!rol || !cedula || !nombre || !apellido || !correo || !contrasena) {
+            this.mostrarToast("Por favor complete todos los campos obligatorios del alta.", true);
+            return;
+        }
+
+        const regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!regexCorreo.test(correo)) {
+            this.mostrarToast("Formato de correo inválido para el nuevo usuario.", true);
+            return;
+        }
+
+        const regexCedula = /^\d{8,}$/;
+        if (!regexCedula.test(cedula)) {
+            this.mostrarToast("La cédula/ID debe contener únicamente números y tener al menos 8 dígitos.", true);
+            return;
+        }
+
+        const payload = {
+            creadorId: this.usuarioActivo.id,
+            creadorRol: 'Administrador',
+            id: cedula,
+            nombre: nombre,
+            apellido: apellido,
+            correo: correo,
+            contrasena: contrasena,
+            rol: rol
+        };
+
+        if (rol === 'Especialista') {
+            const espec = this.adminEspecialidad.value;
+            if (!espec) {
+                this.mostrarToast("Debe asignar una especialidad para el doctor.", true);
+                return;
+            }
+            payload.especialidad = espec;
+            payload.rolDetalle = this.adminRolClinico.value.trim();
+        } else if (rol === 'Secretario') {
+            const area = this.adminArea.value;
+            if (!area) {
+                this.mostrarToast("Debe asignar un área para el secretario.", true);
+                return;
+            }
+            payload.areaAsignada = area;
+            payload.rolDetalle = this.adminRolAdmin.value.trim();
+        }
+
+        this.loader.style.display = 'inline-block';
+        const btnReg = document.getElementById('btnAdminRegistrar');
+        btnReg.disabled = true;
+
+        fetch('http://localhost:3000/api/usuarios/registro-personal', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(res => {
+            this.loader.style.display = 'none';
+            btnReg.disabled = false;
+            return res.json().then(data => ({ status: res.status, body: data }));
+        })
+        .then(result => {
+            if (result.status === 201) {
+                this.mostrarToast(result.body.mensaje || "Personal registrado con éxito.");
+                this.adminRegForm.reset();
+                this.toggleCamposAdminRegistro();
+            } else {
+                this.mostrarToast(result.body.error || "Ocurrió un error al registrar.", true);
+            }
+        })
+        .catch(err => {
+            this.loader.style.display = 'none';
+            btnReg.disabled = false;
+            console.error(err);
+            this.mostrarToast("Error de conexión al dar de alta el personal.", true);
+        });
+    }
+
     // Validaciones inline
     validarCorreo() {
         const val = this.inputCorreo.value.trim();
@@ -312,15 +457,15 @@ class PerfilView {
         // Construir Payload
         const payload = {
             modificadoPor: this.usuarioActivo.id,
-            rolModificadoPor: this.usuarioActivo.rol === 'Secretario' || this.usuarioActivo.rol === 'Recepción Dpto.' ? 'Secretario' : 'Paciente',
+            rolModificadoPor: this.usuarioActivo.rol === 'Secretario' || this.usuarioActivo.rol === 'Recepción Dpto.' ? 'Secretario' : (this.usuarioActivo.rol === 'Administrador' ? 'Administrador' : 'Paciente'),
             correo: this.inputCorreo.value.trim(),
             telefono: this.inputTelefono.value.trim(),
             fotoUrl: this.inputFoto.value.trim(),
             biografia: this.inputBiografia.value.trim()
         };
 
-        // Si es secretario, adjunta nombres
-        if (payload.rolModificadoPor === 'Secretario') {
+        // Si es secretario o admin modificando paciente, adjunta nombres
+        if (payload.rolModificadoPor === 'Secretario' || payload.rolModificadoPor === 'Administrador') {
             payload.nombre = this.inputNombre.value.trim();
             payload.apellido = this.inputApellido.value.trim();
         }

@@ -17,6 +17,7 @@ app.get('/api/especialidades/:nombre', especialidadController.obtenerDetalles);
 
 // RUTAS DE USUARIOS (NUEVO)
 app.post('/api/usuarios/registro', usuarioController.registroUsuario);
+app.post('/api/usuarios/registro-personal', usuarioController.registroPersonal);
 app.post('/api/usuarios/login', usuarioController.loginUsuario);
 app.get('/api/usuarios/pacientes', usuarioController.listarPacientes);
 app.get('/api/usuarios/:id', usuarioController.obtenerUsuario);

@@ -10,5 +10,17 @@
     "biografia": "Paciente de cardiología y medicina general.",
     "rol": "Paciente",
     "cita": null
+  },
+  {
+    "correo": "sramirez.24@est.ucab.edu.ve",
+    "contrasena": "MTIzNA==",
+    "id": "31662140",
+    "nombre": "sebastian",
+    "apellido": "ramirez",
+    "telefono": "",
+    "fotoUrl": "https://ui-avatars.com/api/?name=sebastian+ramirez&background=28a745&color=fff",
+    "biografia": "",
+    "rol": "Paciente",
+    "cita": null
   }
 ]

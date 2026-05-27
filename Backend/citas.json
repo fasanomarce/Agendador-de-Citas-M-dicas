@@ -2,19 +2,19 @@
   {
     "nombre": "Marcello",
     "apellido": "Fasano",
-    "motivo": "Dolores estomacales",
+    "motivo": "Dolor estomacal",
     "doctor": "Dr. Carlos López",
     "fecha": "2026-05-28",
-    "hora": "10:00",
-    "id": 1779768169056
+    "hora": "11:00",
+    "id": 1779835686283
   },
   {
-    "nombre": "Marcello",
-    "apellido": "Fasano",
-    "motivo": "Dolor Estomacal",
+    "nombre": "sdgs",
+    "apellido": "gdsg",
+    "motivo": "sdgsg",
     "doctor": "Dra. María Gómez",
     "fecha": "2026-05-28",
     "hora": "11:00",
-    "id": 1779768294418
+    "id": 1779846950869
   }
 ]

@@ -204,6 +204,50 @@ button[id="btnSalir"]:hover {
     }
 }
 
+/*=======================================================
+                     2. CONSULTAR CITAS
+=======================================================*/
+
+.mensaje-vacio {
+    text-align: center;
+    color: #666;
+    font-size: 1.2em;
+    padding: 20px;
+}
+
+.mensaje-error {
+    text-align: center;
+    color: #dc3545;
+    font-size: 1.2em;
+    padding: 20px;
+    font-weight: 600;
+}
+
+.cita-card {
+    border: 1px solid #ccc;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cita-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.cita-card-titulo {
+    margin-top: 0;
+    color: #007BFF;
+}
+
+/* Modificador de ancho para pantallas que requieran mas espacio (ej. Consultar Citas) */
+.container-consultas {
+    max-width: 900px;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .form-container {
@@ -215,4 +259,322 @@ button[id="btnSalir"]:hover {
         margin-bottom: 15px;
         margin-right: 0;
     }
+}
+
+/*=======================================================
+                    3. TABLERO DE CITAS (MENU)
+=======================================================*/
+
+.dashboard-main {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+.dashboard-header h2 {
+    font-size: 28px;
+    color: #334;
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+.dashboard-divider {
+    border: 0;
+    height: 1px;
+    background: #d4d4d4;
+    margin-bottom: 30px;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px;
+}
+
+.dashboard-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow 0.3s ease;
+}
+
+.dashboard-card:hover {
+    box-shadow: 0 6px 15px rgba(0,0,0,0.25);
+}
+
+.card-link-wrapper {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.card-link-wrapper:hover .card-title {
+    text-decoration: underline;
+}
+
+.card-top {
+    height: 140px;
+    position: relative;
+}
+
+.card-menu-icon {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.card-body {
+    padding: 20px;
+    flex-grow: 1;
+}
+
+.card-title {
+    margin: 0 0 5px 0;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.card-subtitle {
+    margin: 0 0 4px 0;
+    color: #555;
+    font-size: 14px;
+}
+
+.card-subtext {
+    margin: 0;
+    color: #777;
+    font-size: 12px;
+}
+
+.card-footer {
+    display: flex;
+    padding: 15px 20px;
+    gap: 20px;
+    border-top: 1px solid #eee;
+    color: #777;
+    background-color: #fafafa;
+}
+
+.card-footer .icon {
+    cursor: pointer;
+    font-size: 16px;
+    transition: color 0.2s;
+}
+
+.card-footer .icon:hover {
+    color: #0056b3;
+}
+
+/*=======================================================
+               4. VENTANA EMERGENTE (MODAL NOTION)
+=======================================================*/
+
+.modal-overlay {
+    display: none; /* Oculto por defecto */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.6);
+    /* Efecto de difuminado atrás opcional */
+    backdrop-filter: blur(2px);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-notion {
+    background-color: #202020; /* Modo oscuro */
+    color: #E0E0E0;
+    width: 900px;
+    max-width: 95%;
+    max-height: 90vh;
+    border-radius: 8px;
+    position: relative;
+    overflow-y: auto;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+.modal-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 24px;
+    color: #888;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.modal-close:hover {
+    color: #fff;
+    background-color: transparent;
+    transform: none;
+    box-shadow: none;
+}
+
+.modal-notion-layout {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+/* Panel Izquierdo */
+.modal-notion-left {
+    flex: 2;
+    padding: 60px 40px 40px 60px;
+    min-width: 300px;
+}
+
+.notion-title {
+    font-size: 40px;
+    font-weight: 700;
+    margin: 0 0 30px 0;
+    color: #FFF;
+}
+
+.notion-properties {
+    margin-bottom: 30px;
+}
+
+.prop-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    font-size: 14px;
+}
+
+.prop-icon {
+    width: 24px;
+    color: #999;
+}
+
+.prop-label {
+    width: 120px;
+    color: #999;
+}
+
+.prop-value {
+    color: #D4D4D4;
+}
+
+.notion-divider {
+    border: 0;
+    border-top: 1px solid #333;
+    margin: 30px 0;
+}
+
+.notion-content h3 {
+    font-size: 18px;
+    color: #FFF;
+    margin-bottom: 10px;
+}
+
+.notion-content p {
+    color: #CCC;
+    line-height: 1.6;
+}
+
+.notion-actions {
+    margin-top: 30px;
+}
+
+.btn-reservar-notion {
+    display: inline-block;
+    padding: 10px 15px;
+    background: transparent;
+    color: #6495ED;
+    border: 1px solid #4682B4;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+
+.btn-reservar-notion:hover {
+    background-color: rgba(70, 130, 180, 0.1);
+}
+
+/* Panel Derecho (Directorio) */
+.modal-notion-right {
+    flex: 1;
+    background-color: #252525;
+    padding: 60px 40px 40px 30px;
+    border-left: 1px solid #333;
+    min-width: 250px;
+}
+
+.personal-title {
+    font-size: 16px;
+    color: #FFF;
+    margin-top: 0;
+    margin-bottom: 25px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+.personal-group {
+    margin-bottom: 30px;
+}
+
+.grupo-titulo {
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 15px;
+}
+
+.perfil-card {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 8px;
+    border-radius: 6px;
+    transition: background-color 0.2s;
+}
+
+.perfil-card:hover {
+    background-color: #333;
+}
+
+.perfil-img {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    margin-right: 12px;
+    object-fit: cover;
+}
+
+.perfil-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.perfil-link {
+    color: #FFF;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 2px;
+}
+
+.perfil-link:hover {
+    text-decoration: underline;
+}
+
+.perfil-rol {
+    color: #999;
+    font-size: 12px;
 }

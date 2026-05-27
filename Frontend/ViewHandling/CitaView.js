@@ -8,7 +8,44 @@ class CitaView {
         document.addEventListener("DOMContentLoaded", () => {
             this.configurarFecha();
             this.asignarEventos();
+            this.cargarEspecialistasDesdeURL();
         });
+    }
+
+    cargarEspecialistasDesdeURL() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const especialidad = urlParams.get('especialidad');
+
+        if (especialidad) {
+            // Ajustamos el título del Paso 2 para dar feedback
+            const legendPaso2 = document.querySelector('#paso2 legend');
+            if(legendPaso2) {
+                legendPaso2.innerText = `Paso 2: Lista de Especialistas - ${especialidad}`;
+            }
+
+            fetch(`http://localhost:3000/api/especialidades/${encodeURIComponent(especialidad)}`)
+                .then(res => {
+                    if(!res.ok) throw new Error("Error al obtener la especialidad");
+                    return res.json();
+                })
+                .then(datos => {
+                    const datalist = document.getElementById('lista-doctores');
+                    if (datalist && datos.doctores) {
+                        datalist.innerHTML = ''; // Limpiamos hardcoded values
+                        
+                        if (datos.doctores.length === 0) {
+                            alert("No hay doctores disponibles para esta especialidad actualmente.");
+                        } else {
+                            datos.doctores.forEach(doc => {
+                                datalist.innerHTML += `<option value="Dr/a. ${doc.nombre} ${doc.apellido}"></option>`;
+                            });
+                        }
+                    }
+                })
+                .catch(err => {
+                    console.error("No se pudo cargar especialistas de la URL", err);
+                });
+        }
     }
 
     // Asocia las interacciones de los botones a métodos de esta clase
@@ -85,14 +122,14 @@ class CitaView {
     guardarReservacion(evento) {
         evento.preventDefault();
         
-        const citaNueva = {
-            nombre: document.getElementById('nombre').value,
-            apellido: document.getElementById('apellido').value,
-            motivo: document.getElementById('motivo').value,
-            doctor: document.getElementById('doctor').value,
-            fecha: document.getElementById('fecha').value,
-            hora: document.getElementById('hora').value,
-        }
+        const citaNueva = new Cita(
+            document.getElementById('nombre').value,
+            document.getElementById('apellido').value,
+            document.getElementById('motivo').value,
+            document.getElementById('doctor').value,
+            document.getElementById('fecha').value,
+            document.getElementById('hora').value
+        );
 
         // envia datos a node.js
         fetch('http://localhost:3000/api/citas', {

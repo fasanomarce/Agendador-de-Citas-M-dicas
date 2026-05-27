@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Especialidades Médicas</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <header class="header">
+        <h1 class="header_logo">Agendador de Citas</h1>
+        
+        <!-- Navegación principal -->
+        <nav class="nav" id="mainNav" aria-label="Navegación principal">
+            <ul class="nav__list">
+                <li class="nav__item"><a href="MenuCitas.html" class="nav__link">Menú Principal</a></li>
+                <li class="nav__item"><a href="ConsultarCitas.html" class="nav__link">Consultar Citas</a></li>
+                <li class="nav__item"><a href="Perfil.html" class="nav__link">Mi Perfil</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="dashboard-main">
+        <div class="dashboard-header">
+            <h2>Tablero de Especialidades</h2>
+            <hr class="dashboard-divider">
+        </div>
+
+        <div class="dashboard-grid">
+            
+            <!-- Especialidad 1 -->
+            <div class="dashboard-card">
+                <a href="#" class="card-link-wrapper" onclick="menuCitasView.abrirModal('Cardiología')">
+                    <div class="card-top" style="background-color: #2F4F4F;">
+                        <div class="card-menu-icon">⋮</div>
+                    </div>
+                    <div class="card-body">
+                        <h3 class="card-title" style="color: #2F4F4F;">Cardiología</h3>
+                        <p class="card-subtext">Consultorio 101 - Lunes a Viernes</p>
+                    </div>
+                </a>
+
+            </div>
+
+            <!-- Especialidad 2 -->
+            <div class="dashboard-card">
+                <a href="#" class="card-link-wrapper" onclick="menuCitasView.abrirModal('Pediatría')">
+                    <div class="card-top" style="background-color: #B22222;">
+                        <div class="card-menu-icon">⋮</div>
+                    </div>
+                    <div class="card-body">
+                        <h3 class="card-title" style="color: #B22222;">Pediatría</h3>
+                        <p class="card-subtext">Consultorio 204 - Lunes a Sábado</p>
+                    </div>
+                </a>
+
+            </div>
+
+            <!-- Especialidad 3 -->
+            <div class="dashboard-card">
+                <a href="#" class="card-link-wrapper" onclick="menuCitasView.abrirModal('Dermatología')">
+                    <div class="card-top" style="background-color: #008000;">
+                        <div class="card-menu-icon">⋮</div>
+                    </div>
+                    <div class="card-body">
+                        <h3 class="card-title" style="color: #008000;">Dermatología</h3>
+                        <p class="card-subtext">Consultorio 305 - Martes a Viernes</p>
+                    </div>
+                </a>
+
+            </div>
+
+            <!-- Especialidad 4 -->
+            <div class="dashboard-card">
+                <a href="#" class="card-link-wrapper" onclick="menuCitasView.abrirModal('Odontología')">
+                    <div class="card-top" style="background-color: #4682B4;">
+                        <div class="card-menu-icon">⋮</div>
+                    </div>
+                    <div class="card-body">
+                        <h3 class="card-title" style="color: #4682B4;">Odontología</h3>
+                        <p class="card-subtext">Consultorio 102 - Lunes a Viernes</p>
+                    </div>
+                </a>
+
+            </div>
+
+            <!-- Especialidad 5 -->
+            <div class="dashboard-card">
+                <a href="#" class="card-link-wrapper" onclick="menuCitasView.abrirModal('Neurología')">
+                    <div class="card-top" style="background-color: #696969;">
+                        <div class="card-menu-icon">⋮</div>
+                    </div>
+                    <div class="card-body">
+                        <h3 class="card-title" style="color: #696969;">Neurología</h3>
+                        <p class="card-subtext">Consultorio 401 - Miércoles a Viernes</p>
+                    </div>
+                </a>
+
+            </div>
+            
+        </div>
+    </main>
+
+    <!-- VENTANA EMERGENTE -->
+    <div id="especialidadModal" class="modal-overlay">
+        <div class="modal-notion">
+            <button class="modal-close" onclick="menuCitasView.cerrarModal()">×</button>
+            <div class="modal-notion-layout">
+                
+                <!-- Parte Izquierda (Contenido y descripción) -->
+                <div class="modal-notion-left">
+                    <h1 id="modalTitulo" class="notion-title">Oftalmología</h1>
+                    
+                    <div class="notion-properties">
+                        <div class="prop-row">
+                            <span class="prop-icon">🕒</span>
+                            <span class="prop-label">Horario</span>
+                            <span class="prop-value" id="modalHorario">...</span>
+                        </div>
+                    </div>
+                    
+                    <hr class="notion-divider">
+
+                    <div class="notion-content">
+                        <h3>Sobre esta Especialidad</h3>
+                        <p id="modalDescripcion">Esta área se encarga del diagnóstico, tratamiento y prevención de las enfermedades de los pacientes. Contamos con tecnología de punta y especialistas listos para brindarle la mejor atención estructurada.</p>
+                        
+                        <div class="notion-actions">
+                            <a href="RegistrarCita.html" class="btn-reservar-notion" id="btnAgendarCita">➜ Agendar cita para esta área</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Parte Derecha (Personal) -->
+                <div class="modal-notion-right">
+                    <h3 class="personal-title">Directorio del Área</h3>
+                    
+                    <div class="personal-group">
+                        <h4 class="grupo-titulo">Especialistas (Doctores)</h4>
+                        
+                        <div id="contenedorDoctores"></div>
+                    </div>
+                    
+                    <div class="personal-group">
+                        <h4 class="grupo-titulo">Secretarios</h4>
+                        
+                        <div id="contenedorSecretarios"></div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../ViewHandling/MenuCitasView.js"></script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consultar Citas</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    
+    <header class="header">
+        <h1 class="header_logo">Agendador de Citas</h1>
+        
+        <!-- Navegación principal -->
+        <nav class="nav" id="mainNav" aria-label="Navegación principal">
+            <ul class="nav__list">
+                <li class="nav__item"><a href="MenuCitas.html" class="nav__link">Menú Principal</a></li>
+                <li class="nav__item"><a href="perfil.html" class="nav__link">Mi Perfil</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="form-container container-consultas">
+            <h2>Mis Citas Reservadas</h2>
+            <p>A continuación puedes ver los detalles de las citas médicas que tienes programadas.</p>
+            
+            <!-- Contenedor donde se insertarán las citas dinámicamente -->
+            <div id="contenedorCitas" style="margin-top: 20px;">
+                <p id="mensajeVacio">Cargando tus citas...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Importamos el modelo (por si lo necesitamos en el front) y el controlador de la vista  -->
+    <script src="../../Backend/Model/Cita.js"></script>
+    <script src="../ViewHandling/ConsultarCitasView.js"></script>
+
+</body>
+</html>

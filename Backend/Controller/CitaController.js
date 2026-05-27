@@ -1,16 +1,15 @@
-const fs = require('fs');
-const path = require('path');
-
-const rutaJson = path.join(__dirname, '../citas.json');
-
 class CitaController {
+    // Atributos estáticos de la clase
+    static fs = require('fs');
+    static path = require('path');
+    static rutaJson = CitaController.path.join(__dirname, '../citas.json');
     
     // este metodo se activa con el POST
     static guardarCita(req, res) {
         const nuevaCita = req.body; // aca llegan los datos del fetch
         
         // leer el JSON actual
-        fs.readFile(rutaJson, 'utf8', (err, data) => {
+        CitaController.fs.readFile(CitaController.rutaJson, 'utf8', (err, data) => {
             if (err) return res.status(500).json({error: "Error leyendo archivo" });
             
             // convertir el texto JSON a un arreglo de JS
@@ -30,7 +29,7 @@ class CitaController {
             // agrega la cita nueva al arreglo
             citas.push(nuevaCita);
 
-            fs.writeFile(rutaJson, JSON.stringify(citas, null, 2), (err) => {
+            CitaController.fs.writeFile(CitaController.rutaJson, JSON.stringify(citas, null, 2), (err) => {
                 if (err) return res.status(500).json({ error: "Error guardando la cita en el archivo." });
 
                 res.status(201).json({ mensaje: "Cita guardada correctamente." });
@@ -39,8 +38,8 @@ class CitaController {
     }
 
     // para consultar cita
-    static obtenerCitas(req, res) {
-        fs.readFile(rutaJson, 'utf8', (err, data) => {
+    static cargarCitas(req, res) {
+        CitaController.fs.readFile(CitaController.rutaJson, 'utf8', (err, data) => {
             if (err) return res.status(500).json({error: "Error leyendo archivo" });
             res.json(JSON.parse(data));
         });

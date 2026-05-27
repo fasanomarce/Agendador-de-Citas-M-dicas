@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Paciente - Agendador de Citas</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Estilos específicos para la validación inline y estética premium de registro */
+        .input-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .feedback {
+            font-size: 13px;
+            margin-top: 5px;
+            display: none;
+            font-weight: 500;
+        }
+        .feedback.error {
+            color: #dc3545;
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        .feedback.success {
+            color: #28a745;
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        .input-error {
+            border-color: #dc3545 !important;
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.15) !important;
+        }
+        .input-success {
+            border-color: #28a745 !important;
+            box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.15) !important;
+        }
+        /* Estilo del Toast de notificación */
+        .toast-notificacion {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #28a745;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            z-index: 1100;
+            display: none;
+            align-items: center;
+            font-weight: 600;
+            animation: deslizarDerecha 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .toast-notificacion.error {
+            background-color: #dc3545;
+        }
+        @keyframes deslizarDerecha {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .registro-footer {
+            margin-top: 25px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .registro-footer a {
+            color: #0056b3;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .registro-footer a:hover {
+            text-decoration: underline;
+        }
+        .loader-registro {
+            display: none;
+            border: 3px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 3px solid #28a745;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .contenedor-botones {
+            display: flex;
+            align-items: center;
+            margin-top: 25px;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <h1 class="header_logo">Agendador de Citas</h1>
+        <nav class="nav" id="mainNav">
+            <ul class="nav__list">
+                <li class="nav__item"><a href="login.html" class="nav__link">Iniciar Sesión</a></li>
+                <li class="nav__item"><a href="registro.html" class="nav__link" style="background-color: rgba(255,255,255,0.3);">Registrarse</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="form-container">
+            <h2>Crear Cuenta (Registro de Paciente)</h2>
+            <p>Complete sus datos personales para registrarse e ingresar al sistema de agendamiento.</p>
+            
+            <form id="registroForm" novalidate>
+                <fieldset>
+                    <legend>Datos Personales Obligatorios</legend>
+                    
+                    <!-- Cédula/ID -->
+                    <div class="input-group">
+                        <label for="cedula">Cédula / Identificación (ID)*</label>
+                        <input type="text" id="cedula" name="id" placeholder="Ej. 17798356 (mínimo 8 dígitos)" required>
+                        <span id="cedulaFeedback" class="feedback"></span>
+                    </div>
+
+                    <!-- Nombre -->
+                    <div class="input-group">
+                        <label for="nombre">Nombre*</label>
+                        <input type="text" id="nombre" name="nombre" placeholder="Ingrese su nombre" required>
+                        <span id="nombreFeedback" class="feedback"></span>
+                    </div>
+
+                    <!-- Apellido -->
+                    <div class="input-group">
+                        <label for="apellido">Apellido*</label>
+                        <input type="text" id="apellido" name="apellido" placeholder="Ingrese su apellido" required>
+                        <span id="apellidoFeedback" class="feedback"></span>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Credenciales de Acceso</legend>
+                    
+                    <!-- Correo Electrónico -->
+                    <div class="input-group">
+                        <label for="correo">Correo Electrónico*</label>
+                        <input type="text" id="correo" name="correo" placeholder="ejemplo@correo.com" required>
+                        <span id="correoFeedback" class="feedback"></span>
+                    </div>
+
+                    <!-- Contraseña -->
+                    <div class="input-group">
+                        <label for="contrasena">Contraseña*</label>
+                        <input type="password" id="contrasena" name="contrasena" placeholder="Cree una contraseña segura" style="width: 100%; padding: 12px 15px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 15px;" required>
+                        <span id="contrasenaFeedback" class="feedback"></span>
+                    </div>
+                </fieldset>
+
+                <div class="contenedor-botones">
+                    <button type="submit" id="btnRegistrarse">Confirmar Registro</button>
+                    <span id="loader" class="loader-registro" style="display: none;"></span>
+                </div>
+            </form>
+
+            <div class="registro-footer">
+                ¿Ya tiene una cuenta registrada? <a href="login.html">Inicie sesión aquí</a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Notion para Éxito -->
+    <div id="exitoModal" class="modal-overlay">
+        <div class="modal-notion" style="width: 500px; padding: 40px; text-align: center;">
+            <h1 class="notion-title" style="color: #28a745; font-size: 32px; margin-bottom: 20px;">✓ Registro Exitoso</h1>
+            <p style="color: #CCC; font-size: 16px; line-height: 1.6; margin-bottom: 30px;">
+                ¡Felicidades! Su usuario ha sido registrado correctamente en el sistema en un plazo de <span id="tiempoDesempeño" style="font-weight:bold; color: #28a745;">...</span>. El rol de <strong>Paciente</strong> se le ha asignado de manera predeterminada.
+            </p>
+            <div style="margin-top: 20px;">
+                <a href="login.html" class="btn-reservar-notion" style="padding: 12px 25px; border-color: #28a745; color: #28a745; font-size: 16px; font-weight: bold; border-radius: 20px;">Ir a Iniciar Sesión</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast flotante -->
+    <div id="toast" class="toast-notificacion"></div>
+
+    <script src="../ViewHandling/registroView.js"></script>
+</body>
+</html>

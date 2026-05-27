@@ -9,7 +9,24 @@ class CitaView {
             this.configurarFecha();
             this.asignarEventos();
             this.cargarEspecialistasDesdeURL();
+            this.prellenarUsuarioSesion();
         });
+    }
+
+    prellenarUsuarioSesion() {
+        const sesionJSON = localStorage.getItem('usuarioActivo');
+        if (sesionJSON) {
+            const usuario = JSON.parse(sesionJSON);
+            const inputNombre = document.getElementById('nombre');
+            const inputApellido = document.getElementById('apellido');
+            
+            if (inputNombre && usuario.nombre) {
+                inputNombre.value = usuario.nombre;
+            }
+            if (inputApellido && usuario.apellido) {
+                inputApellido.value = usuario.apellido;
+            }
+        }
     }
 
     cargarEspecialistasDesdeURL() {

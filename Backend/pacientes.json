@@ -1,0 +1,14 @@
+[
+  {
+    "id": "12345678",
+    "nombre": "Marcello",
+    "apellido": "Fasano",
+    "correo": "marcello@clinica.com",
+    "contrasena": "123",
+    "telefono": "0987654321",
+    "fotoUrl": "https://ui-avatars.com/api/?name=Marcello+Fasano&background=28a745&color=fff",
+    "biografia": "Paciente de cardiología y medicina general.",
+    "rol": "Paciente",
+    "cita": null
+  }
+]

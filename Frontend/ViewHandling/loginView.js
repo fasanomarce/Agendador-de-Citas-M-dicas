@@ -1,0 +1,62 @@
+class LoginView {
+    constructor() {
+        this.form = document.getElementById('loginForm');
+        this.correo = document.getElementById('correo');
+        this.contrasena = document.getElementById('contrasena');
+        this.loader = document.getElementById('loader');
+        this.toast = document.getElementById('toast');
+        this.init();
+    }
+
+    init() {
+        this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+    }
+
+    mostrarToast(mensaje) {
+        this.toast.innerText = mensaje;
+        this.toast.style.display = 'flex';
+        setTimeout(() => { this.toast.style.display = 'none'; }, 5000);
+    }
+
+    handleSubmit(e) {
+        e.preventDefault();
+
+        const correoVal = this.correo.value.trim();
+        const contraVal = this.contrasena.value;
+
+        if (!correoVal || !contraVal) {
+            this.mostrarToast('Por favor complete todos los campos.');
+            return;
+        }
+
+        this.loader.style.display = 'inline-block';
+        const btn = document.getElementById('btnIngresar');
+        btn.disabled = true;
+
+        fetch(`${API_BASE}/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ correo: correoVal, contrasena: contraVal })
+        })
+            .then(res => {
+                this.loader.style.display = 'none';
+                btn.disabled = false;
+                return res.json().then(data => ({ status: res.status, body: data }));
+            })
+            .then(result => {
+                if (result.status === 200) {
+                    const usuario = guardarSesion(result.body);
+                    window.location.href = destinoTrasLogin(usuario);
+                } else {
+                    this.mostrarToast(result.body.error || 'Credenciales incorrectas.');
+                }
+            })
+            .catch(() => {
+                this.loader.style.display = 'none';
+                btn.disabled = false;
+                this.mostrarToast('No se pudo conectar con el servidor de la clínica. ¿Está encendido?');
+            });
+    }
+}
+
+const loginView = new LoginView();

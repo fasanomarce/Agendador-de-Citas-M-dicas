@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Especialidades Médicas</title>
     <link rel="stylesheet" href="styles.css">
+<<<<<<< Updated upstream
+=======
+    <script src="../ViewHandling/config.js"></script>
+    <script>
+        const sesionMenu = exigirSesion();
+        if (sesionMenu && sesionMenu.rol !== 'Paciente') {
+            window.location.href = perfilUrlPorRol(sesionMenu.rol);
+        }
+    </script>
+>>>>>>> Stashed changes
 </head>
 <body>
 

@@ -1,0 +1,117 @@
+<<<<<<< Updated upstream
+=======
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - Agendador de Citas</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .input-group {
+            margin-bottom: 20px;
+        }
+        .toast-notificacion {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #dc3545;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            z-index: 1100;
+            display: none;
+            align-items: center;
+            font-weight: 600;
+            animation: deslizarDerecha 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes deslizarDerecha {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .login-footer {
+            margin-top: 25px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .login-footer a {
+            color: #0056b3;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .login-footer a:hover {
+            text-decoration: underline;
+        }
+        .loader-login {
+            display: none;
+            border: 3px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 3px solid #28a745;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <h1 class="header_logo">Agendador de Citas</h1>
+        <nav class="nav" id="mainNav">
+            <ul class="nav__list">
+                <li class="nav__item"><a href="login.html" class="nav__link" style="background-color: rgba(255,255,255,0.3);">Iniciar Sesión</a></li>
+                <li class="nav__item"><a href="registro.html" class="nav__link">Registrarse</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="form-container" style="max-width: 450px;">
+            <h2>Iniciar Sesión</h2>
+            <p>Ingrese sus credenciales de acceso para gestionar sus citas y perfil.</p>
+            
+            <form id="loginForm" novalidate>
+                <fieldset>
+                    <legend>Credenciales Clínicas</legend>
+                    
+                    <!-- Correo -->
+                    <div class="input-group">
+                        <label for="correo">Correo Electrónico</label>
+                        <input type="text" id="correo" placeholder="ejemplo@correo.com" required>
+                    </div>
+
+                    <!-- Contraseña -->
+                    <div class="input-group">
+                        <label for="contrasena">Contraseña</label>
+                        <input type="password" id="contrasena" placeholder="Ingrese su contraseña" style="width: 100%; padding: 12px 15px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 15px;" required>
+                    </div>
+                </fieldset>
+
+                <div style="display: flex; align-items: center; margin-top: 25px;">
+                    <button type="submit" id="btnIngresar">Ingresar al Sistema</button>
+                    <span id="loader" class="loader-login"></span>
+                </div>
+            </form>
+
+            <div class="login-footer">
+                ¿Aún no tiene una cuenta? <a href="registro.html">Regístrese aquí</a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast flotante -->
+    <div id="toast" class="toast-notificacion"></div>
+
+    <script src="../ViewHandling/config.js"></script>
+    <script src="../ViewHandling/loginView.js"></script>
+</body>
+</html>
+>>>>>>> Stashed changes

@@ -1,40 +1,49 @@
 const fs = require('fs');
 const path = require('path');
 
-const rutaJson = path.join(__dirname, '../citas.json');
+const rutaCitas = path.join(__dirname, '../citas.json');
+const rutaBloques = path.join(__dirname, '../bloques.json');
 
-class CitaStore {
-    static leerCitas() {
-        try {
-            const data = fs.readFileSync(rutaJson, 'utf8');
-            return data ? JSON.parse(data) : [];
-        } catch {
-            return [];
-        }
-    }
-
-    static guardarCitas(citas) {
-        fs.writeFileSync(rutaJson, JSON.stringify(citas, null, 2), 'utf8');
-    }
-
-    static nombreDoctorEspecialista(especialista) {
-        return `Dr/a. ${especialista.nombre} ${especialista.apellido}`;
-    }
-
-    static coincideConPaciente(cita, paciente) {
-        const mismoId = cita.pacienteId != null && String(cita.pacienteId) === String(paciente.id);
-        const mismoNombre =
-            cita.nombre === paciente.nombre && cita.apellido === paciente.apellido;
-        return mismoId || mismoNombre;
-    }
-
-    static coincideConEspecialista(cita, especialista) {
-        const etiqueta = CitaStore.nombreDoctorEspecialista(especialista);
-        if (cita.especialistaId != null && String(cita.especialistaId) === String(especialista.id)) {
-            return true;
-        }
-        return cita.doctor === etiqueta || (cita.doctor && cita.doctor.includes(especialista.apellido));
+function leerCitas() {
+    try {
+        const data = fs.readFileSync(rutaCitas, 'utf8');
+        return data ? JSON.parse(data) : [];
+    } catch {
+        return [];
     }
 }
 
-module.exports = CitaStore;
+function guardarCitas(citas) {
+    fs.writeFileSync(rutaCitas, JSON.stringify(citas, null, 2), 'utf8');
+}
+
+function leerBloques() {
+    try {
+        const data = fs.readFileSync(rutaBloques, 'utf8');
+        return data ? JSON.parse(data) : [];
+    } catch {
+        return [];
+    }
+}
+
+function guardarBloques(bloques) {
+    fs.writeFileSync(rutaBloques, JSON.stringify(bloques, null, 2), 'utf8');
+}
+
+function normalizarEstado(cita) {
+    if (!cita.estado) cita.estado = 'pendiente';
+    return cita;
+}
+
+function nombreDoctorDesdeEspecialista(esp) {
+    return `Dr/a. ${esp.nombre} ${esp.apellido}`;
+}
+
+module.exports = {
+    leerCitas,
+    guardarCitas,
+    leerBloques,
+    guardarBloques,
+    normalizarEstado,
+    nombreDoctorDesdeEspecialista
+};

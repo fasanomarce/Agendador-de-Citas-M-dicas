@@ -5,6 +5,7 @@ class LoginView {
         this.contrasena = document.getElementById('contrasena');
         this.loader = document.getElementById('loader');
         this.toast = document.getElementById('toast');
+
         this.init();
     }
 
@@ -15,7 +16,10 @@ class LoginView {
     mostrarToast(mensaje) {
         this.toast.innerText = mensaje;
         this.toast.style.display = 'flex';
-        setTimeout(() => { this.toast.style.display = 'none'; }, 5000);
+
+        setTimeout(() => {
+            this.toast.style.display = 'none';
+        }, 5000);
     }
 
     handleSubmit(e) {
@@ -25,7 +29,7 @@ class LoginView {
         const contraVal = this.contrasena.value;
 
         if (!correoVal || !contraVal) {
-            this.mostrarToast('Por favor complete todos los campos.');
+            this.mostrarToast("Por favor complete todos los campos.");
             return;
         }
 
@@ -33,29 +37,39 @@ class LoginView {
         const btn = document.getElementById('btnIngresar');
         btn.disabled = true;
 
-        fetch(`${API_BASE}/auth/login`, {
+        fetch('http://localhost:3000/api/auth/login', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json'
+            },
             body: JSON.stringify({ correo: correoVal, contrasena: contraVal })
         })
-            .then(res => {
-                this.loader.style.display = 'none';
-                btn.disabled = false;
-                return res.json().then(data => ({ status: res.status, body: data }));
-            })
-            .then(result => {
-                if (result.status === 200) {
-                    const usuario = guardarSesion(result.body);
-                    window.location.href = destinoTrasLogin(usuario);
-                } else {
-                    this.mostrarToast(result.body.error || 'Credenciales incorrectas.');
-                }
-            })
-            .catch(() => {
-                this.loader.style.display = 'none';
-                btn.disabled = false;
-                this.mostrarToast('No se pudo conectar con el servidor de la clínica. ¿Está encendido?');
-            });
+        .then(res => {
+            this.loader.style.display = 'none';
+            btn.disabled = false;
+            return res.json().then(data => ({ status: res.status, body: data }));
+        })
+        .then(result => {
+            if (result.status === 200) {
+                localStorage.setItem('usuarioActivo', JSON.stringify(result.body));
+                const rol = result.body.rol;
+                const destinos = {
+                    Paciente: 'MenuCitas.html',
+                    Secretario: 'PerfilSecretario.html',
+                    Especialista: 'PerfilEspecialista.html',
+                    Administrador: 'PerfilAdmin.html'
+                };
+                window.location.href = destinos[rol] || 'MenuCitas.html';
+            } else {
+                this.mostrarToast(result.body.error || "Credenciales incorrectas.");
+            }
+        })
+        .catch(err => {
+            this.loader.style.display = 'none';
+            btn.disabled = false;
+            console.error(err);
+            this.mostrarToast("No se pudo conectar con el servidor de la clínica. ¿Está encendido?");
+        });
     }
 }
 

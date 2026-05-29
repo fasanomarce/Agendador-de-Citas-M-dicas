@@ -1,92 +1,100 @@
+const API_BASE = 'http://localhost:3000/api';
+
 class PerfilSecretarioView {
     constructor() {
-        this.usuario = exigirSesion();
-        if (!this.usuario) return;
-        if (this.usuario.rol !== 'Secretario') {
-            window.location.replace(perfilUrlPorRol(this.usuario.rol));
-            return;
-        }
-
+        this.usuarioActivo = null;
         this.idModificar = null;
-        this.cachePacientes = [];
-        this.toast = document.getElementById('toast');
+        this.pacientesCache = [];
         this.init();
     }
 
     init() {
-        document.getElementById('sideAvatar').src = this.usuario.fotoUrl || '';
-        document.getElementById('sideNombre').innerText = `${this.usuario.nombre} ${this.usuario.apellido}`;
-        document.getElementById('sideArea').innerText = this.usuario.areaAsignada || '';
-
-        document.getElementById('btnCerrarSesion').addEventListener('click', () => {
-            localStorage.removeItem('usuarioActivo');
+        const sesion = localStorage.getItem('usuarioActivo');
+        if (!sesion) {
             window.location.href = 'login.html';
+            return;
+        }
+        this.usuarioActivo = JSON.parse(sesion);
+        if (this.usuarioActivo.rol !== 'Secretario') {
+            window.location.href = 'Perfil.html';
+            return;
+        }
+
+        document.getElementById('buscadorPaciente').addEventListener('input', () => this.filtrarPacientes());
+        document.getElementById('formPaciente').addEventListener('submit', (e) => this.guardarPaciente(e));
+        document.getElementById('formBloque').addEventListener('submit', (e) => this.asignarBloque(e));
+        document.getElementById('selectEspecialista').addEventListener('change', (e) => {
+            const opt = e.target.selectedOptions[0];
+            if (opt && opt.dataset.especialidad) {
+                document.getElementById('bloqueEspecialidad').value = opt.dataset.especialidad;
+            }
         });
 
-        document.getElementById('buscadorPaciente').addEventListener('input', () => this.filtrar());
-        document.getElementById('perfilForm').addEventListener('submit', (e) => this.guardarPaciente(e));
-        document.getElementById('bloquesForm').addEventListener('submit', (e) => this.asignarBloque(e));
-
         this.cargarPacientes();
+        this.cargarCitas();
+        this.cargarEspecialistas();
+        this.cargarBloques();
+    }
+
+    mostrarToast(msg, error = false) {
+        const t = document.getElementById('toast');
+        t.innerText = msg;
+        t.className = error ? 'toast-notificacion error' : 'toast-notificacion';
+        t.style.display = 'block';
+        setTimeout(() => { t.style.display = 'none'; }, 5000);
     }
 
     cargarPacientes() {
-        fetch(`${API_BASE}/secretarios/pacientes`)
+        fetch(`${API_BASE}/secretario/pacientes`)
             .then(res => res.json())
             .then(data => {
-                this.cachePacientes = data;
-                this.renderLista(data);
+                this.pacientesCache = data;
+                this.renderPacientes(data);
             });
     }
 
-    renderLista(lista) {
+    renderPacientes(lista) {
         const ul = document.getElementById('listaPacientes');
         ul.innerHTML = '';
-        if (!lista.length) {
-            ul.innerHTML = '<li style="padding:15px;color:#aaa;">Sin resultados.</li>';
-            return;
-        }
         lista.forEach(p => {
             const li = document.createElement('li');
-            li.className = 'pacientes-item';
-            if (String(this.idModificar) === String(p.id)) li.classList.add('activo');
-            li.innerHTML = `<strong>${p.nombre} ${p.apellido}</strong> — ID ${p.id}`;
-            li.addEventListener('click', () => this.seleccionar(p));
+            li.className = 'pacientes-item' + (String(this.idModificar) === String(p.id) ? ' activo' : '');
+            li.innerText = `${p.nombre} ${p.apellido} — ID ${p.id}`;
+            li.addEventListener('click', () => this.seleccionarPaciente(p));
             ul.appendChild(li);
         });
     }
 
-    filtrar() {
+    filtrarPacientes() {
         const q = document.getElementById('buscadorPaciente').value.trim().toLowerCase();
-        if (!q) return this.renderLista(this.cachePacientes);
-        const filtrados = this.cachePacientes.filter(p =>
+        if (!q) return this.renderPacientes(this.pacientesCache);
+        const f = this.pacientesCache.filter(p =>
             p.nombre.toLowerCase().includes(q) ||
             p.apellido.toLowerCase().includes(q) ||
             String(p.id).includes(q)
         );
-        this.renderLista(filtrados);
+        this.renderPacientes(f);
     }
 
-    seleccionar(p) {
+    seleccionarPaciente(p) {
         this.idModificar = p.id;
-        document.getElementById('tituloFormulario').innerText = `Editando: ${p.nombre} ${p.apellido}`;
+        document.getElementById('tituloEdicion').innerText = `Editando: ${p.nombre} ${p.apellido}`;
         document.getElementById('inputNombre').value = p.nombre;
         document.getElementById('inputApellido').value = p.apellido;
         document.getElementById('inputCorreo').value = p.correo;
         document.getElementById('inputTelefono').value = p.telefono || '';
         document.getElementById('inputBiografia').value = p.biografia || '';
-        this.filtrar();
+        this.filtrarPacientes();
     }
 
     guardarPaciente(e) {
         e.preventDefault();
         if (!this.idModificar) {
-            mostrarToast(this.toast, 'Seleccione un paciente de la lista.', true);
+            this.mostrarToast('Seleccione un paciente primero.', true);
             return;
         }
-
         const payload = {
-            modificadoPor: this.usuario.id,
+            modificadoPor: this.usuarioActivo.id,
             rolModificadoPor: 'Secretario',
             nombre: document.getElementById('inputNombre').value.trim(),
             apellido: document.getElementById('inputApellido').value.trim(),
@@ -95,52 +103,130 @@ class PerfilSecretarioView {
             biografia: document.getElementById('inputBiografia').value.trim()
         };
 
-        fetch(`${API_BASE}/secretarios/pacientes/${this.idModificar}`, {
+        fetch(`${API_BASE}/secretario/pacientes/${this.idModificar}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         })
-            .then(res => res.json().then(body => ({ status: res.status, body })))
-            .then(({ status, body }) => {
-                if (status === 200) {
-                    mostrarToast(this.toast, body.mensaje);
+            .then(res => res.json().then(b => ({ status: res.status, body: b })))
+            .then(r => {
+                if (r.status === 200) {
+                    this.mostrarToast(r.body.mensaje);
                     this.cargarPacientes();
                 } else {
-                    mostrarToast(this.toast, body.error || 'Error al guardar.', true);
+                    this.mostrarToast(r.body.error || 'Error.', true);
                 }
+            });
+    }
+
+    cargarCitas() {
+        fetch(`${API_BASE}/secretario/citas`)
+            .then(res => res.json())
+            .then(citas => {
+                const cont = document.getElementById('listaCitas');
+                cont.innerHTML = '';
+                citas.forEach(c => {
+                    const div = document.createElement('div');
+                    div.className = 'cita-card';
+                    div.innerHTML = `
+                        <p><strong>${c.nombre} ${c.apellido}</strong> — ${c.doctor}</p>
+                        <p>${c.fecha} ${c.hora} | Estado: ${c.estado || 'pendiente'}</p>
+                        <label>Fecha <input type="date" class="cita-fecha" value="${c.fecha}"></label>
+                        <label>Hora <input type="time" class="cita-hora" value="${c.hora}"></label>
+                        <button type="button" class="btn-guardar-cita">Guardar cambios</button>
+                    `;
+                    div.querySelector('.btn-guardar-cita').addEventListener('click', () => {
+                        const fecha = div.querySelector('.cita-fecha').value;
+                        const hora = div.querySelector('.cita-hora').value;
+                        this.actualizarCita(c.id, fecha, hora);
+                    });
+                    cont.appendChild(div);
+                });
+            });
+    }
+
+    actualizarCita(id, fecha, hora) {
+        fetch(`${API_BASE}/secretario/citas/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                modificadoPor: this.usuarioActivo.id,
+                rolModificadoPor: 'Secretario',
+                fecha,
+                hora
             })
-            .catch(() => mostrarToast(this.toast, 'Error de conexión.', true));
+        })
+            .then(res => res.json().then(b => ({ status: res.status, body: b })))
+            .then(r => {
+                if (r.status === 200) {
+                    this.mostrarToast('Cita actualizada.');
+                    this.cargarCitas();
+                } else {
+                    this.mostrarToast(r.body.error || 'Error.', true);
+                }
+            });
+    }
+
+    cargarEspecialistas() {
+        fetch(`${API_BASE}/secretario/especialistas`)
+            .then(res => res.json())
+            .then(lista => {
+                const sel = document.getElementById('selectEspecialista');
+                sel.innerHTML = '<option value="">Seleccione médico...</option>';
+                lista.forEach(e => {
+                    const opt = document.createElement('option');
+                    opt.value = e.id;
+                    opt.dataset.especialidad = e.especialidad;
+                    opt.innerText = `Dr/a. ${e.nombre} ${e.apellido} (${e.especialidad})`;
+                    sel.appendChild(opt);
+                });
+            });
     }
 
     asignarBloque(e) {
         e.preventDefault();
         const payload = {
+            modificadoPor: this.usuarioActivo.id,
             rolModificadoPor: 'Secretario',
+            especialistaId: document.getElementById('selectEspecialista').value,
             especialidad: document.getElementById('bloqueEspecialidad').value,
-            especialistaId: document.getElementById('bloqueEspecialistaId').value,
-            bloques: [{
-                dia: document.getElementById('bloqueDia').value.trim(),
-                horaInicio: document.getElementById('bloqueInicio').value,
-                horaFin: document.getElementById('bloqueFin').value
-            }]
+            fecha: document.getElementById('bloqueFecha').value,
+            horaInicio: document.getElementById('bloqueInicio').value,
+            horaFin: document.getElementById('bloqueFin').value
         };
 
-        fetch(`${API_BASE}/secretarios/bloques-horarios`, {
+        fetch(`${API_BASE}/secretario/bloques`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         })
-            .then(res => res.json().then(body => ({ status: res.status, body })))
-            .then(({ status, body }) => {
-                if (status === 200) {
-                    mostrarToast(this.toast, body.mensaje);
-                    e.target.reset();
+            .then(res => res.json().then(b => ({ status: res.status, body: b })))
+            .then(r => {
+                if (r.status === 201) {
+                    this.mostrarToast(r.body.mensaje);
+                    document.getElementById('formBloque').reset();
+                    this.cargarBloques();
                 } else {
-                    mostrarToast(this.toast, body.error || 'No se pudo asignar el bloque.', true);
+                    this.mostrarToast(r.body.error || 'Error.', true);
                 }
-            })
-            .catch(() => mostrarToast(this.toast, 'Error de conexión.', true));
+            });
+    }
+
+    cargarBloques() {
+        fetch(`${API_BASE}/secretario/bloques`)
+            .then(res => res.json())
+            .then(bloques => {
+                const ul = document.getElementById('listaBloques');
+                ul.innerHTML = bloques.map(b =>
+                    `<li style="padding:8px 0;border-bottom:1px solid #eee">${b.especialistaNombre} — ${b.especialidad} | ${b.fecha} ${b.horaInicio}-${b.horaFin}</li>`
+                ).join('') || '<li>Sin bloques asignados.</li>';
+            });
+    }
+
+    cerrarSesion() {
+        localStorage.removeItem('usuarioActivo');
+        window.location.href = 'login.html';
     }
 }
 
-new PerfilSecretarioView();
+const perfilSecretarioView = new PerfilSecretarioView();

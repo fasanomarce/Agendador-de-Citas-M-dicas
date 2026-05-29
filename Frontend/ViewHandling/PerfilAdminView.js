@@ -1,54 +1,62 @@
+const API_BASE = 'http://localhost:3000/api';
+
 class PerfilAdminView {
     constructor() {
-        this.usuario = exigirSesion();
-        if (!this.usuario) return;
-        if (this.usuario.rol !== 'Administrador') {
-            window.location.replace(perfilUrlPorRol(this.usuario.rol));
-            return;
-        }
-
+        this.usuarioActivo = null;
+        this.adminRegForm = document.getElementById('adminRegForm');
+        this.especialidadForm = document.getElementById('especialidadForm');
         this.toast = document.getElementById('toast');
         this.init();
     }
 
     init() {
-        document.getElementById('sideAvatar').src = this.usuario.fotoUrl || '';
-        document.getElementById('sideNombre').innerText = `${this.usuario.nombre} ${this.usuario.apellido}`;
-
-        document.getElementById('btnCerrarSesion').addEventListener('click', () => {
-            localStorage.removeItem('usuarioActivo');
+        const sesion = localStorage.getItem('usuarioActivo');
+        if (!sesion) {
             window.location.href = 'login.html';
-        });
+            return;
+        }
+        this.usuarioActivo = JSON.parse(sesion);
+        if (this.usuarioActivo.rol !== 'Administrador') {
+            window.location.href = 'Perfil.html';
+            return;
+        }
 
-        document.getElementById('adminRol').addEventListener('change', () => this.toggleCamposRol());
-        document.getElementById('adminRegForm').addEventListener('submit', (e) => this.registrarPersonal(e));
-        document.getElementById('especialidadForm').addEventListener('submit', (e) => this.crearEspecialidad(e));
-
-        this.cargarCatalogoEspecialidades();
+        this.cargarEspecialidadesEnSelects();
+        document.getElementById('adminRol').addEventListener('change', () => this.toggleCampos());
+        this.adminRegForm.addEventListener('submit', (e) => this.registrarPersonal(e));
+        this.especialidadForm.addEventListener('submit', (e) => this.registrarEspecialidad(e));
     }
 
-    cargarCatalogoEspecialidades() {
+    cargarEspecialidadesEnSelects() {
         fetch(`${API_BASE}/admin/especialidades`)
             .then(res => res.json())
-            .then(nombres => {
-                document.getElementById('listaEspecialidades').innerText = nombres.join(', ') || 'Ninguna';
-                const opts = nombres.map(n => `<option value="${n}">${n}</option>`).join('');
-                document.getElementById('adminEspecialidad').innerHTML = '<option value="">Seleccione...</option>' + opts;
-                document.getElementById('adminArea').innerHTML = '<option value="">Seleccione...</option>' + opts;
-            });
+            .then(lista => {
+                const opts = '<option value="">Seleccione...</option>' +
+                    lista.map(n => `<option value="${n}">${n}</option>`).join('');
+                document.getElementById('adminEspecialidad').innerHTML = opts;
+                document.getElementById('adminArea').innerHTML = opts;
+            })
+            .catch(() => {});
     }
 
-    toggleCamposRol() {
+    toggleCampos() {
         const rol = document.getElementById('adminRol').value;
         document.getElementById('adminCamposEspecialista').style.display = rol === 'Especialista' ? 'block' : 'none';
         document.getElementById('adminCamposSecretario').style.display = rol === 'Secretario' ? 'block' : 'none';
+    }
+
+    mostrarToast(msg, error = false) {
+        this.toast.innerText = msg;
+        this.toast.className = error ? 'toast-notificacion error' : 'toast-notificacion';
+        this.toast.style.display = 'block';
+        setTimeout(() => { this.toast.style.display = 'none'; }, 5000);
     }
 
     registrarPersonal(e) {
         e.preventDefault();
         const rol = document.getElementById('adminRol').value;
         const payload = {
-            creadorId: this.usuario.id,
+            creadorId: this.usuarioActivo.id,
             creadorRol: 'Administrador',
             id: document.getElementById('adminCedula').value.trim(),
             nombre: document.getElementById('adminNombre').value.trim(),
@@ -58,28 +66,33 @@ class PerfilAdminView {
             rol
         };
 
-        if (rol === 'Especialista') payload.especialidad = document.getElementById('adminEspecialidad').value;
-        if (rol === 'Secretario') payload.areaAsignada = document.getElementById('adminArea').value;
+        if (rol === 'Especialista') {
+            payload.especialidad = document.getElementById('adminEspecialidad').value;
+            payload.rolDetalle = document.getElementById('adminRolClinico').value.trim();
+        } else if (rol === 'Secretario') {
+            payload.areaAsignada = document.getElementById('adminArea').value;
+            payload.rolDetalle = document.getElementById('adminRolAdmin').value.trim();
+        }
 
         fetch(`${API_BASE}/admin/personal`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         })
-            .then(res => res.json().then(body => ({ status: res.status, body })))
-            .then(({ status, body }) => {
-                if (status === 201) {
-                    mostrarToast(this.toast, body.mensaje);
-                    e.target.reset();
-                    this.toggleCamposRol();
+            .then(res => res.json().then(b => ({ status: res.status, body: b })))
+            .then(r => {
+                if (r.status === 201) {
+                    this.mostrarToast(r.body.mensaje);
+                    this.adminRegForm.reset();
+                    this.toggleCampos();
                 } else {
-                    mostrarToast(this.toast, body.error || 'Error al registrar.', true);
+                    this.mostrarToast(r.body.error || 'Error al registrar.', true);
                 }
             })
-            .catch(() => mostrarToast(this.toast, 'Error de conexión.', true));
+            .catch(() => this.mostrarToast('Error de conexión.', true));
     }
 
-    crearEspecialidad(e) {
+    registrarEspecialidad(e) {
         e.preventDefault();
         const payload = {
             creadorRol: 'Administrador',
@@ -95,18 +108,23 @@ class PerfilAdminView {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         })
-            .then(res => res.json().then(body => ({ status: res.status, body })))
-            .then(({ status, body }) => {
-                if (status === 201) {
-                    mostrarToast(this.toast, body.mensaje);
-                    e.target.reset();
-                    this.cargarCatalogoEspecialidades();
+            .then(res => res.json().then(b => ({ status: res.status, body: b })))
+            .then(r => {
+                if (r.status === 201) {
+                    this.mostrarToast(r.body.mensaje);
+                    this.especialidadForm.reset();
+                    this.cargarEspecialidadesEnSelects();
                 } else {
-                    mostrarToast(this.toast, body.error || 'Error al crear especialidad.', true);
+                    this.mostrarToast(r.body.error || 'Error.', true);
                 }
             })
-            .catch(() => mostrarToast(this.toast, 'Error de conexión.', true));
+            .catch(() => this.mostrarToast('Error de conexión.', true));
+    }
+
+    cerrarSesion() {
+        localStorage.removeItem('usuarioActivo');
+        window.location.href = 'login.html';
     }
 }
 
-new PerfilAdminView();
+const perfilAdminView = new PerfilAdminView();

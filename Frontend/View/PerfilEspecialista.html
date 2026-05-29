@@ -5,37 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel Especialista - Agendador de Citas</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="perfil-layout.css">
+    <style>
+        .esp-container { max-width: 900px; margin: 30px auto; padding: 0 20px; }
+        .esp-panel { background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
+        .cita-card { border: 1px solid #e1e8ed; padding: 18px; border-radius: 8px; margin-bottom: 15px; }
+        .cita-card.completada { opacity: 0.75; border-color: #28a745; }
+        .estado-pill { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+        .estado-pendiente { background: #fff3cd; color: #856404; }
+        .estado-completada { background: #d4edda; color: #155724; }
+        .toast-notificacion { position: fixed; top: 20px; right: 20px; background: #28a745; color: #fff; padding: 15px 25px; border-radius: 8px; display: none; z-index: 1100; }
+        .toast-notificacion.error { background: #dc3545; }
+    </style>
 </head>
 <body>
     <header class="header">
         <h1 class="header_logo">Agendador de Citas</h1>
         <nav class="nav">
             <ul class="nav__list">
-                <li class="nav__item"><a href="PerfilEspecialista.html" class="nav__link" style="background-color: rgba(255,255,255,0.3);">Mis Citas</a></li>
-                <li class="nav__item"><a href="ConsultarCitas.html" class="nav__link">Agenda</a></li>
+                <li class="nav__item"><a href="PerfilEspecialista.html" class="nav__link" style="background:rgba(255,255,255,0.3)">Mis Citas</a></li>
             </ul>
         </nav>
     </header>
 
-    <main class="perfil-container">
-        <aside class="perfil-sidebar">
-            <img id="sideAvatar" src="" alt="Avatar" class="avatar-grande">
-            <h3 id="sideNombre" class="nombre-perfil"></h3>
-            <span class="rol-tag especialista">Especialista</span>
-            <p id="sideEspecialidad" style="font-size:14px;color:#555;"></p>
-            <button type="button" class="btn-cerrar-sesion" id="btnCerrarSesion">Cerrar Sesión</button>
-        </aside>
-
-        <section class="perfil-main">
-            <h2>Citas agendadas con pacientes</h2>
-            <p>Marque cada cita como completada una vez atendida al paciente.</p>
-            <div id="listaCitas"></div>
+    <main class="esp-container">
+        <section class="esp-panel">
+            <h2 id="tituloBienvenida">Citas agendadas con pacientes</h2>
+            <p id="subtituloEsp">Consulte y marque como completadas las atenciones realizadas.</p>
+            <div id="listaCitasEsp" style="margin-top:20px">
+                <p>Cargando citas...</p>
+            </div>
         </section>
+        <button onclick="perfilEspecialistaView.cerrarSesion()" style="background:#dc3545;color:#fff;margin-top:15px">Cerrar Sesión</button>
     </main>
 
     <div id="toast" class="toast-notificacion"></div>
-    <script src="../ViewHandling/config.js"></script>
     <script src="../ViewHandling/PerfilEspecialistaView.js"></script>
 </body>
 </html>

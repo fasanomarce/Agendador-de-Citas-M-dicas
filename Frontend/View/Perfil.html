@@ -3,12 +3,238 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Perfil - Agendador de Citas</title>
+    <title>Mi Perfil - Paciente</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        .perfil-container {
+            display: flex;
+            gap: 30px;
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        .perfil-sidebar {
+            flex: 1;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            height: fit-content;
+        }
+        .perfil-main {
+            flex: 2;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        .avatar-grande {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            border: 4px solid #0056b3;
+            object-fit: cover;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+        .nombre-perfil {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 10px 0 5px 0;
+            color: #333;
+        }
+        .rol-tag {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            background-color: #e1e8ed;
+            color: #555;
+            margin-bottom: 20px;
+        }
+        .rol-tag.paciente {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .rol-tag.secretario {
+            background-color: #cce5ff;
+            color: #004085;
+        }
+        .input-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .input-disabled {
+            background-color: #f1f4f8 !important;
+            color: #666 !important;
+            cursor: not-allowed;
+            border-color: #d1d5db !important;
+        }
+        .feedback {
+            font-size: 13px;
+            margin-top: 5px;
+            display: none;
+            font-weight: 500;
+        }
+        .feedback.error {
+            color: #dc3545;
+            display: block;
+        }
+        .feedback.success {
+            color: #28a745;
+            display: block;
+        }
+        .input-error {
+            border-color: #dc3545 !important;
+        }
+        .input-success {
+            border-color: #28a745 !important;
+        }
+        .toast-notificacion {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #28a745;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            z-index: 1100;
+            display: none;
+            align-items: center;
+            font-weight: 600;
+            animation: deslizarDerecha 0.4s ease forwards;
+        }
+        .toast-notificacion.error {
+            background-color: #dc3545;
+        }
+        @keyframes deslizarDerecha {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .btn-cerrar-sesion {
+            background-color: #dc3545;
+            color: white;
+            width: 100%;
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 20px;
+        }
+        .btn-cerrar-sesion:hover {
+            background-color: #bd2130;
+        }
+        @media (max-width: 900px) {
+            .perfil-container {
+                flex-direction: column;
+            }
+        }
+    </style>
 </head>
 <body>
-    <p style="text-align:center;margin-top:40px;">Redirigiendo a su panel según rol...</p>
-    <script src="../ViewHandling/config.js"></script>
-    <script>redirigirPerfilPorRol();</script>
+
+    <header class="header">
+        <h1 class="header_logo">Agendador de Citas</h1>
+        <nav class="nav" id="mainNav">
+            <ul class="nav__list">
+                <li class="nav__item"><a href="MenuCitas.html" class="nav__link">Menú Principal</a></li>
+                <li class="nav__item"><a href="ConsultarCitas.html" class="nav__link">Consultar Citas</a></li>
+                <li class="nav__item"><a href="Perfil.html" class="nav__link" style="background-color: rgba(255,255,255,0.3);">Mi Perfil</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="perfil-container">
+        
+        <!-- Panel Izquierdo: Resumen Sesión -->
+        <aside class="perfil-sidebar">
+            <img id="sideAvatar" src="https://ui-avatars.com/api/?name=Usuario&background=0056b3&color=fff" alt="Avatar" class="avatar-grande">
+            <h3 id="sideNombre" class="nombre-perfil">Cargando...</h3>
+            <span id="sideRol" class="rol-tag">Paciente</span>
+            <div id="sideDetalles" style="text-align: left; margin-top: 20px; font-size: 14px; color: #555;">
+                <p><strong>Cédula/ID:</strong> <span id="sideCedula">...</span></p>
+                <p><strong>Correo:</strong> <span id="sideCorreo">...</span></p>
+            </div>
+            
+            <button class="btn-cerrar-sesion" onclick="perfilView.cerrarSesion()">Cerrar Sesión</button>
+        </aside>
+
+        <!-- Panel Derecho: Edición / Gestión -->
+        <section class="perfil-main">
+            
+            <!-- Formulario de Edición (solo Paciente) -->
+            <h2 id="tituloFormulario">Modificar Mis Datos de Contacto</h2>
+            <p id="subtituloFormulario">Actualice su información de contacto. Recuerde que el ID y Rol son datos inalterables de seguridad.</p>
+            
+            <form id="perfilForm" novalidate>
+                <fieldset>
+                    <legend>Campos de Identificación (No Editables)</legend>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="input-group">
+                            <label>Cédula / ID de Seguridad</label>
+                            <input type="text" id="inputID" class="input-disabled" readonly>
+                        </div>
+                        <div class="input-group">
+                            <label>Rol Asignado</label>
+                            <input type="text" id="inputRol" class="input-disabled" readonly>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Información de Contacto y Perfil</legend>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="input-group">
+                            <label for="inputNombre">Nombre</label>
+                            <input type="text" id="inputNombre" class="input-disabled" readonly>
+                        </div>
+                        <div class="input-group">
+                            <label for="inputApellido">Apellido</label>
+                            <input type="text" id="inputApellido" class="input-disabled" readonly>
+                        </div>
+                    </div>
+
+                    <!-- Correo electrónico (Valida unicidad) -->
+                    <div class="input-group">
+                        <label for="inputCorreo">Correo Electrónico*</label>
+                        <input type="text" id="inputCorreo" required>
+                        <span id="correoFeedback" class="feedback"></span>
+                    </div>
+
+                    <!-- Teléfono -->
+                    <div class="input-group">
+                        <label for="inputTelefono">Número de Teléfono</label>
+                        <input type="text" id="inputTelefono" placeholder="Ej. 0987654321" required>
+                        <span id="telefonoFeedback" class="feedback"></span>
+                    </div>
+
+                    <!-- URL Foto de Perfil / Avatar -->
+                    <div class="input-group">
+                        <label for="inputFoto">Foto de Perfil (URL)</label>
+                        <input type="text" id="inputFoto" placeholder="https://ejemplo.com/avatar.jpg">
+                    </div>
+
+                    <!-- Biografía -->
+                    <div class="input-group">
+                        <label for="inputBiografia">Biografía / Observaciones Médicas</label>
+                        <textarea id="inputBiografia" rows="4" placeholder="Breve descripción del historial de contacto u observaciones del paciente..."></textarea>
+                    </div>
+                </fieldset>
+
+                <div style="display: flex; align-items: center; margin-top: 25px;">
+                    <button type="submit" id="btnGuardarPerfil">Guardar Cambios de Forma Inmediata</button>
+                    <span id="loader" class="loader-login" style="display: none; border-top-color: #0056b3;"></span>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <!-- Toast flotante -->
+    <div id="toast" class="toast-notificacion"></div>
+
+    <script src="../ViewHandling/PerfilView.js"></script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 const Paciente = require('../Model/Paciente');
-const UsuarioStore = require('../utils/UsuarioStore');
+const store = require('../utils/usuarioStore');
 
 class AuthController {
     static registro(req, res) {
@@ -13,9 +13,9 @@ class AuthController {
         }
 
         id = id.toString().trim();
-        nombre = UsuarioStore.sanitizar(nombre.trim());
-        apellido = UsuarioStore.sanitizar(apellido.trim());
-        correo = UsuarioStore.sanitizar(correo.trim().toLowerCase());
+        nombre = store.sanitizar(nombre.trim());
+        apellido = store.sanitizar(apellido.trim());
+        correo = store.sanitizar(correo.trim().toLowerCase());
 
         const regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!regexCorreo.test(correo)) {
@@ -29,20 +29,19 @@ class AuthController {
             });
         }
 
-        if (UsuarioStore.correoExisteGlobal(correo)) {
+        if (store.correoExisteGlobal(correo)) {
             return res.status(400).json({ error: 'El correo electrónico ya se encuentra registrado en el sistema.' });
         }
-
-        if (UsuarioStore.idExisteGlobal(id)) {
+        if (store.idExisteGlobal(id)) {
             return res.status(400).json({ error: 'La cédula/ID ya se encuentra registrada en el sistema.' });
         }
 
-        const pacientes = UsuarioStore.leerPacientes();
-        const contrasenaCifrada = UsuarioStore.cifrarPassword(contrasena);
+        const pacientes = store.leerPacientes();
+        const contrasenaCifrada = store.cifrarPassword(contrasena);
         const nuevoPaciente = new Paciente(id, nombre, apellido, correo, contrasenaCifrada);
 
         pacientes.push(nuevoPaciente);
-        UsuarioStore.guardarPacientes(pacientes);
+        store.guardarPacientes(pacientes);
 
         console.log(`[HU-01] Registro público exitoso procesado en ${Date.now() - tInicio}ms.`);
 
@@ -67,9 +66,9 @@ class AuthController {
         }
 
         correo = correo.trim().toLowerCase();
-        const contrasenaCifrada = UsuarioStore.cifrarPassword(contrasena);
+        const contrasenaCifrada = store.cifrarPassword(contrasena);
 
-        const pacientes = UsuarioStore.leerPacientes();
+        const pacientes = store.leerPacientes();
         const paciente = pacientes.find(p => p.correo === correo);
         if (paciente && (paciente.contrasena === contrasena || paciente.contrasena === contrasenaCifrada)) {
             return res.json({
@@ -84,7 +83,7 @@ class AuthController {
             });
         }
 
-        const personal = UsuarioStore.leerPersonal();
+        const personal = store.leerPersonal();
         const especialista = personal.especialistas.find(e => e.correo === correo);
         if (especialista && (especialista.contrasena === contrasena || especialista.contrasena === contrasenaCifrada)) {
             return res.json({
@@ -114,7 +113,8 @@ class AuthController {
             });
         }
 
-        const admin = UsuarioStore.leerAdmins().find(a => a.correo === correo);
+        const admins = store.leerAdmins();
+        const admin = admins.find(a => a.correo === correo);
         if (admin && (admin.contrasena === contrasena || admin.contrasena === contrasenaCifrada)) {
             return res.json({
                 id: admin.id,

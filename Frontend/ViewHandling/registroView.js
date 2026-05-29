@@ -147,7 +147,7 @@ class RegistroView {
 
         const tInicio = Date.now();
 
-        fetch(`${API_BASE}/auth/registro`, {
+        fetch('http://localhost:3000/api/auth/registro', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

@@ -1,0 +1,10 @@
+[
+  {
+    "id": "99999999",
+    "nombre": "Luis",
+    "apellido": "Alfaro",
+    "correo": "admin@clinica.com",
+    "contrasena": "123",
+    "rol": "Administrador"
+  }
+]

@@ -1,16 +1,14 @@
-const fs = require('fs');
-const path = require('path');
 const Paciente = require('../Model/Paciente');
-const UsuarioStore = require('../utils/UsuarioStore');
-
-const rutaEspecialidades = path.join(__dirname, '../especialidades.json');
+const store = require('../utils/usuarioStore');
 
 class AdminController {
-    static registroPersonal(req, res) {
+    static registrarPersonal(req, res) {
         const { creadorId, creadorRol, id, nombre, apellido, correo, contrasena, rol, especialidad, areaAsignada, rolDetalle } = req.body;
 
         if (!creadorId || creadorRol !== 'Administrador') {
-            return res.status(403).json({ error: 'Acceso denegado. Solo administradores autorizados pueden registrar personal.' });
+            return res.status(403).json({
+                error: 'Acceso denegado. Solo administradores autorizados pueden registrar personal.'
+            });
         }
 
         if (!id || !nombre || !apellido || !correo || !contrasena || !rol) {
@@ -18,10 +16,10 @@ class AdminController {
         }
 
         const sId = id.toString().trim();
-        const sNombre = UsuarioStore.sanitizar(nombre.trim());
-        const sApellido = UsuarioStore.sanitizar(apellido.trim());
-        const sCorreo = UsuarioStore.sanitizar(correo.trim().toLowerCase());
-        const sContraCifrada = UsuarioStore.cifrarPassword(contrasena);
+        const sNombre = store.sanitizar(nombre.trim());
+        const sApellido = store.sanitizar(apellido.trim());
+        const sCorreo = store.sanitizar(correo.trim().toLowerCase());
+        const sContraCifrada = store.cifrarPassword(contrasena);
 
         const regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!regexCorreo.test(sCorreo)) {
@@ -33,24 +31,23 @@ class AdminController {
             return res.status(400).json({ error: 'La cédula/ID debe contener únicamente números y tener al menos 8 dígitos.' });
         }
 
-        if (UsuarioStore.correoExisteGlobal(sCorreo)) {
+        if (store.correoExisteGlobal(sCorreo)) {
             return res.status(400).json({ error: 'El correo electrónico ya está en uso.' });
         }
-
-        if (UsuarioStore.idExisteGlobal(sId)) {
+        if (store.idExisteGlobal(sId)) {
             return res.status(400).json({ error: 'La cédula/ID ya está registrada.' });
         }
 
-        const pacientes = UsuarioStore.leerPacientes();
-        const personal = UsuarioStore.leerPersonal();
-        const admins = UsuarioStore.leerAdmins();
+        const pacientes = store.leerPacientes();
+        const personal = store.leerPersonal();
+        const admins = store.leerAdmins();
 
         if (rol === 'Especialista') {
             if (!especialidad) {
                 return res.status(400).json({ error: 'Debe seleccionar una especialidad para el doctor.' });
             }
-            const sEspec = UsuarioStore.sanitizar(especialidad.trim());
-            const sRolClinico = rolDetalle ? UsuarioStore.sanitizar(rolDetalle.trim()) : 'Médico Titular';
+            const sEspec = store.sanitizar(especialidad.trim());
+            const sRolClinico = rolDetalle ? store.sanitizar(rolDetalle.trim()) : 'Médico Titular';
             const coloresMap = {
                 Cardiología: '2F4F4F',
                 Pediatría: 'B22222',
@@ -71,13 +68,13 @@ class AdminController {
                 color,
                 fotoUrl: `https://ui-avatars.com/api/?name=${sNombre}+${sApellido}&background=${color}&color=fff`
             });
-            UsuarioStore.guardarPersonal(personal);
+            store.guardarPersonal(personal);
         } else if (rol === 'Secretario') {
             if (!areaAsignada) {
                 return res.status(400).json({ error: 'Debe seleccionar un área asignada para el secretario.' });
             }
-            const sArea = UsuarioStore.sanitizar(areaAsignada.trim());
-            const sRolAdmin = rolDetalle ? UsuarioStore.sanitizar(rolDetalle.trim()) : 'Recepción Dpto.';
+            const sArea = store.sanitizar(areaAsignada.trim());
+            const sRolAdmin = rolDetalle ? store.sanitizar(rolDetalle.trim()) : 'Recepción Dpto.';
 
             personal.secretarios.push({
                 id: Number(sId),
@@ -90,7 +87,7 @@ class AdminController {
                 color: '4682B4',
                 fotoUrl: `https://ui-avatars.com/api/?name=${sNombre}+${sApellido}&background=4682B4&color=fff`
             });
-            UsuarioStore.guardarPersonal(personal);
+            store.guardarPersonal(personal);
         } else if (rol === 'Administrador') {
             admins.push({
                 id: sId,
@@ -100,10 +97,10 @@ class AdminController {
                 contrasena: contrasena,
                 rol: 'Administrador'
             });
-            UsuarioStore.guardarAdmins(admins);
+            store.guardarAdmins(admins);
         } else if (rol === 'Paciente') {
             pacientes.push(new Paciente(sId, sNombre, sApellido, sCorreo, sContraCifrada));
-            UsuarioStore.guardarPacientes(pacientes);
+            store.guardarPacientes(pacientes);
         } else {
             return res.status(400).json({ error: 'El rol seleccionado no es válido.' });
         }
@@ -116,76 +113,40 @@ class AdminController {
     }
 
     static listarEspecialidades(req, res) {
-        try {
-            const data = JSON.parse(fs.readFileSync(rutaEspecialidades, 'utf8'));
-            return res.json(Object.keys(data));
-        } catch {
-            return res.json([]);
-        }
+        const especialidades = store.leerEspecialidades();
+        return res.json(Object.keys(especialidades));
     }
 
-    static crearEspecialidad(req, res) {
+    static agregarEspecialidad(req, res) {
         const { creadorRol, nombre, codigo, ubicacion, horario, descripcion } = req.body;
 
         if (creadorRol !== 'Administrador') {
-            return res.status(403).json({ error: 'Acceso denegado.' });
+            return res.status(403).json({ error: 'Acceso denegado. Solo administradores pueden configurar especialidades.' });
         }
 
         if (!nombre || !codigo || !ubicacion || !horario || !descripcion) {
-            return res.status(400).json({ error: 'Todos los campos de la especialidad son obligatorios.' });
+            return res.status(400).json({ error: 'Complete todos los campos de la especialidad.' });
         }
 
-        const nombreLimpio = UsuarioStore.sanitizar(nombre.trim());
-        let especialidades;
-
-        try {
-            especialidades = JSON.parse(fs.readFileSync(rutaEspecialidades, 'utf8'));
-        } catch {
-            especialidades = {};
-        }
+        const nombreLimpio = store.sanitizar(nombre.trim());
+        const especialidades = store.leerEspecialidades();
 
         if (especialidades[nombreLimpio]) {
-            return res.status(400).json({ error: 'La especialidad ya existe en el catálogo.' });
+            return res.status(400).json({ error: 'Esta especialidad médica ya existe en el sistema.' });
         }
 
         especialidades[nombreLimpio] = {
-            codigo: UsuarioStore.sanitizar(codigo.trim()),
-            ubicacion: UsuarioStore.sanitizar(ubicacion.trim()),
-            horario: UsuarioStore.sanitizar(horario.trim()),
-            descripcion: UsuarioStore.sanitizar(descripcion.trim()),
-            bloquesHorarios: {}
+            codigo: store.sanitizar(codigo.trim()),
+            ubicacion: store.sanitizar(ubicacion.trim()),
+            horario: store.sanitizar(horario.trim()),
+            descripcion: store.sanitizar(descripcion.trim())
         };
 
-        fs.writeFileSync(rutaEspecialidades, JSON.stringify(especialidades, null, 2), 'utf8');
+        store.guardarEspecialidades(especialidades);
 
         return res.status(201).json({
-            mensaje: 'Especialidad médica registrada correctamente.',
-            especialidad: nombreLimpio
-        });
-    }
-
-    static modificarPerfilPropio(req, res) {
-        const idModificar = String(req.params.id);
-        const { modificadoPor, rolModificadoPor, correo } = req.body;
-
-        if (!modificadoPor || rolModificadoPor !== 'Administrador' || String(modificadoPor) !== idModificar) {
-            return res.status(403).json({ error: 'Acceso denegado.' });
-        }
-
-        const admins = UsuarioStore.leerAdmins();
-        const indice = admins.findIndex(a => String(a.id) === idModificar);
-        if (indice === -1) {
-            return res.status(404).json({ error: 'Administrador no encontrado.' });
-        }
-
-        if (correo) {
-            admins[indice].correo = UsuarioStore.sanitizar(correo.trim().toLowerCase());
-        }
-        UsuarioStore.guardarAdmins(admins);
-
-        return res.json({
-            mensaje: 'Datos de contacto actualizados de forma inmediata.',
-            usuario: { ...admins[indice], rol: 'Administrador' }
+            mensaje: `Especialidad "${nombreLimpio}" registrada correctamente.`,
+            especialidad: especialidades[nombreLimpio]
         });
     }
 }

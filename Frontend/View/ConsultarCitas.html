@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Consultar Citas</title>
     <link rel="stylesheet" href="styles.css">
+    <script>
+        if (!localStorage.getItem('usuarioActivo')) {
+            window.location.href = 'login.html';
+        }
+    </script>
 </head>
 <body>
     
@@ -15,11 +20,7 @@
         <nav class="nav" id="mainNav" aria-label="Navegación principal">
             <ul class="nav__list">
                 <li class="nav__item"><a href="MenuCitas.html" class="nav__link">Menú Principal</a></li>
-<<<<<<< Updated upstream
-                <li class="nav__item"><a href="perfil.html" class="nav__link">Mi Perfil</a></li>
-=======
-                <li class="nav__item"><a href="Perfil.html" class="nav__link">Mi Panel</a></li>
->>>>>>> Stashed changes
+                <li class="nav__item"><a href="Perfil.html" class="nav__link">Mi Perfil</a></li>
             </ul>
         </nav>
     </header>
@@ -38,7 +39,6 @@
 
     <!-- Importamos el modelo (por si lo necesitamos en el front) y el controlador de la vista  -->
     <script src="../../Backend/Model/Cita.js"></script>
-    <script src="../ViewHandling/config.js"></script>
     <script src="../ViewHandling/ConsultarCitasView.js"></script>
 
 </body>

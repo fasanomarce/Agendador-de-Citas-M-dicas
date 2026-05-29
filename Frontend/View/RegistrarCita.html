@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrar Cita</title>
     <link rel="stylesheet" href="styles.css">
+    <script>
+        if (!localStorage.getItem('usuarioActivo')) {
+            window.location.href = 'login.html';
+        }
+    </script>
 </head>
 
 <body>
@@ -99,7 +104,6 @@
 
     <!-- Controlador de la vista  -->
     <script src="../../Backend/Model/Cita.js"></script>
-    <script src="../ViewHandling/config.js"></script>
     <script src="../ViewHandling/CitaView.js"></script>
 
 </body>

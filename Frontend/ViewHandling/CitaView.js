@@ -5,7 +5,7 @@ class CitaView {
 
     // Inicializa la configuración de la vista y asigna los eventos
     init() {
-        document.addEventListener("DOMContentLoaded", () => {
+        alListo(() => {
             this.configurarFecha();
             this.asignarEventos();
             this.cargarEspecialistasDesdeURL();
@@ -122,22 +122,29 @@ class CitaView {
     guardarReservacion(evento) {
         evento.preventDefault();
         
-        const citaNueva = new Cita(
-            document.getElementById('nombre').value,
-            document.getElementById('apellido').value,
-            document.getElementById('motivo').value,
-            document.getElementById('doctor').value,
-            document.getElementById('fecha').value,
-            document.getElementById('hora').value
-        );
+        const sesion = localStorage.getItem('usuarioActivo');
+        const usuario = sesion ? JSON.parse(sesion) : null;
 
-        // envia datos a node.js
-        fetch('http://localhost:3000/api/citas', {
+        const payload = {
+            pacienteId: usuario && usuario.rol === 'Paciente' ? usuario.id : null,
+            nombre: document.getElementById('nombre').value,
+            apellido: document.getElementById('apellido').value,
+            motivo: document.getElementById('motivo').value,
+            doctor: document.getElementById('doctor').value,
+            fecha: document.getElementById('fecha').value,
+            hora: document.getElementById('hora').value
+        };
+
+        const endpoint = usuario && usuario.rol === 'Paciente'
+            ? `${API_BASE}/pacientes/citas`
+            : `${API_BASE}/citas`;
+
+        fetch(endpoint, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(citaNueva) // convierte la cita a JSON
+            body: JSON.stringify(payload)
         })
         .then(respuesta => respuesta.json()) // promesa: cuando el servidor termine de procesar, traduce la respuesta a json
         .then(datos => {

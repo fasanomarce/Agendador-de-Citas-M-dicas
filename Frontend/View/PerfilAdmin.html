@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administrador - Agendador de Citas</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="perfil-layout.css">
+</head>
+<body>
+    <header class="header">
+        <h1 class="header_logo">Agendador de Citas</h1>
+        <nav class="nav">
+            <ul class="nav__list">
+                <li class="nav__item"><a href="PerfilAdmin.html" class="nav__link" style="background-color: rgba(255,255,255,0.3);">Administración</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="perfil-container">
+        <aside class="perfil-sidebar">
+            <img id="sideAvatar" src="" alt="Avatar" class="avatar-grande">
+            <h3 id="sideNombre" class="nombre-perfil"></h3>
+            <span class="rol-tag admin">Administrador</span>
+            <button type="button" class="btn-cerrar-sesion" id="btnCerrarSesion">Cerrar Sesión</button>
+        </aside>
+
+        <section class="perfil-main">
+            <div class="buscador-panel" style="background:#f0f8ff;">
+                <h3>Alta de personal (staff)</h3>
+                <form id="adminRegForm" novalidate>
+                    <div class="input-group">
+                        <label for="adminRol">Rol*</label>
+                        <select id="adminRol" required>
+                            <option value="">Seleccione...</option>
+                            <option value="Especialista">Especialista</option>
+                            <option value="Secretario">Secretario</option>
+                            <option value="Administrador">Administrador</option>
+                            <option value="Paciente">Paciente</option>
+                        </select>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;">
+                        <div class="input-group"><label for="adminCedula">Cédula*</label><input id="adminCedula" required></div>
+                        <div class="input-group"><label for="adminCorreo">Correo*</label><input id="adminCorreo" required></div>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;">
+                        <div class="input-group"><label for="adminNombre">Nombre*</label><input id="adminNombre" required></div>
+                        <div class="input-group"><label for="adminApellido">Apellido*</label><input id="adminApellido" required></div>
+                    </div>
+                    <div class="input-group"><label for="adminContrasena">Contraseña*</label><input type="password" id="adminContrasena" required></div>
+                    <div id="adminCamposEspecialista" style="display:none;">
+                        <div class="input-group">
+                            <label for="adminEspecialidad">Especialidad*</label>
+                            <select id="adminEspecialidad"><option value="">Seleccione...</option></select>
+                        </div>
+                    </div>
+                    <div id="adminCamposSecretario" style="display:none;">
+                        <div class="input-group">
+                            <label for="adminArea">Área*</label>
+                            <select id="adminArea"><option value="">Seleccione...</option></select>
+                        </div>
+                    </div>
+                    <button type="submit">Dar de alta personal</button>
+                </form>
+            </div>
+
+            <div class="buscador-panel">
+                <h3>Nueva especialidad médica</h3>
+                <form id="especialidadForm">
+                    <div class="input-group"><label for="espNombre">Nombre*</label><input id="espNombre" required></div>
+                    <div class="input-group"><label for="espCodigo">Código*</label><input id="espCodigo" required></div>
+                    <div class="input-group"><label for="espUbicacion">Ubicación*</label><input id="espUbicacion" required></div>
+                    <div class="input-group"><label for="espHorario">Horario*</label><input id="espHorario" required></div>
+                    <div class="input-group"><label for="espDescripcion">Descripción*</label><textarea id="espDescripcion" rows="3" required></textarea></div>
+                    <button type="submit">Registrar especialidad</button>
+                </form>
+                <p style="margin-top:15px;font-size:14px;"><strong>Catálogo actual:</strong> <span id="listaEspecialidades">...</span></p>
+            </div>
+        </section>
+    </main>
+
+    <div id="toast" class="toast-notificacion"></div>
+    <script src="../ViewHandling/config.js"></script>
+    <script src="../ViewHandling/PerfilAdminView.js"></script>
+</body>
+</html>

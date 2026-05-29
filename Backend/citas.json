@@ -16,5 +16,17 @@
     "fecha": "2026-05-28",
     "hora": "11:00",
     "id": 1779846950869
+  },
+  {
+    "id": 1780079916777,
+    "pacienteId": "12345678",
+    "especialistaId": null,
+    "nombre": "Marcello",
+    "apellido": "Fasano",
+    "motivo": "diente flojo",
+    "doctor": "Dr&#x2F;a. María Gómez",
+    "fecha": "2026-06-05",
+    "hora": "14:00",
+    "estado": "pendiente"
   }
 ]

@@ -3,6 +3,7 @@ const API_BASE = 'http://localhost:3000/api';
 class PerfilView {
     constructor() {
         this.usuarioActivo = null;
+        this.rolCanonico = null;
 
         this.sideAvatar = document.getElementById('sideAvatar');
         this.sideNombre = document.getElementById('sideNombre');
@@ -19,6 +20,12 @@ class PerfilView {
         this.inputTelefono = document.getElementById('inputTelefono');
         this.inputFoto = document.getElementById('inputFoto');
         this.inputBiografia = document.getElementById('inputBiografia');
+        this.grupoTelefono = document.getElementById('grupoTelefono');
+        this.grupoBiografia = document.getElementById('grupoBiografia');
+        this.grupoFoto = document.getElementById('grupoFoto');
+        this.campoExtraRol = document.getElementById('campoExtraRol');
+        this.labelExtraRol = document.getElementById('labelExtraRol');
+        this.inputExtraRol = document.getElementById('inputExtraRol');
         this.btnGuardar = document.getElementById('btnGuardarPerfil');
         this.loader = document.getElementById('loader');
         this.toast = document.getElementById('toast');
@@ -34,29 +41,112 @@ class PerfilView {
         }
 
         this.usuarioActivo = JSON.parse(sesionJSON);
+        this.rolCanonico = obtenerRolCanonico(this.usuarioActivo);
 
-        if (this.usuarioActivo.rol !== 'Paciente') {
-            this.redirigirPorRol();
-            return;
+        if (this.rolCanonico === 'Especialista' && this.usuarioActivo.rol !== 'Especialista') {
+            this.usuarioActivo.rol = 'Especialista';
+            localStorage.setItem('usuarioActivo', JSON.stringify(this.usuarioActivo));
         }
 
-        this.sideRol.innerText = 'Paciente';
-        this.sideRol.className = 'rol-tag paciente';
+        this.configurarNavegacion();
+        this.configurarEtiquetasRol();
+        this.configurarCamposPorRol();
         this.renderizarBarraLateral(this.usuarioActivo);
         this.cargarDatosFormulario(this.usuarioActivo);
         this.obtenerDatosFrescos(this.usuarioActivo.id);
 
         this.inputCorreo.addEventListener('input', () => this.validarCorreo());
-        this.inputTelefono.addEventListener('input', () => this.validarTelefono());
+        if (this.grupoTelefono && this.grupoTelefono.style.display !== 'none') {
+            this.inputTelefono.addEventListener('input', () => this.validarTelefono());
+        }
         this.form.addEventListener('submit', (e) => this.handleSubmit(e));
     }
 
-    redirigirPorRol() {
-        window.location.href = destinoInicioSesion(this.usuarioActivo);
+    configurarNavegacion() {
+        const nav = document.getElementById('mainNav')?.querySelector('.nav__list');
+        if (!nav) return;
+
+        const activo = 'style="background-color: rgba(255,255,255,0.3);"';
+        const enlaces = {
+            Paciente: `
+                <li class="nav__item"><a href="MenuCitas.html" class="nav__link">Menú Principal</a></li>
+                <li class="nav__item"><a href="ConsultarCitas.html" class="nav__link">Consultar Citas</a></li>
+                <li class="nav__item"><a href="Perfil.html" class="nav__link" ${activo}>Mi Perfil</a></li>`,
+            Secretario: `
+                <li class="nav__item"><a href="PerfilSecretario.html" class="nav__link">Operaciones</a></li>
+                <li class="nav__item"><a href="Perfil.html" class="nav__link" ${activo}>Mi Perfil</a></li>`,
+            Especialista: `
+                <li class="nav__item"><a href="PerfilEspecialista.html" class="nav__link">Mis Citas</a></li>
+                <li class="nav__item"><a href="Perfil.html" class="nav__link" ${activo}>Mi Perfil</a></li>`,
+            Administrador: `
+                <li class="nav__item"><a href="PerfilAdmin.html" class="nav__link">Administración</a></li>
+                <li class="nav__item"><a href="Perfil.html" class="nav__link" ${activo}>Mi Perfil</a></li>`
+        };
+
+        nav.innerHTML = enlaces[this.rolCanonico] || enlaces.Paciente;
+    }
+
+    configurarEtiquetasRol() {
+        const etiquetas = {
+            Paciente: { texto: 'Paciente', clase: 'rol-tag paciente' },
+            Secretario: { texto: 'Secretario', clase: 'rol-tag secretario' },
+            Especialista: { texto: 'Especialista', clase: 'rol-tag' },
+            Administrador: { texto: 'Administrador', clase: 'rol-tag' }
+        };
+        const info = etiquetas[this.rolCanonico] || etiquetas.Paciente;
+        this.sideRol.innerText = info.texto;
+        this.sideRol.className = info.clase;
+        if (this.rolCanonico === 'Administrador') {
+            this.sideRol.style.backgroundColor = '#0056b3';
+            this.sideRol.style.color = 'white';
+        }
+    }
+
+    configurarCamposPorRol() {
+        const esPaciente = this.rolCanonico === 'Paciente';
+
+        if (this.grupoTelefono) {
+            this.grupoTelefono.style.display = esPaciente ? 'block' : 'none';
+            this.inputTelefono.required = esPaciente;
+        }
+        if (this.grupoBiografia) {
+            this.grupoBiografia.style.display = esPaciente ? 'block' : 'none';
+        }
+        if (this.grupoFoto) {
+            this.grupoFoto.style.display = this.rolCanonico === 'Administrador' ? 'none' : 'block';
+        }
+
+        if (this.campoExtraRol) {
+            if (this.rolCanonico === 'Especialista') {
+                this.campoExtraRol.style.display = 'block';
+                this.labelExtraRol.innerText = 'Especialidad médica';
+            } else if (this.rolCanonico === 'Secretario') {
+                this.campoExtraRol.style.display = 'block';
+                this.labelExtraRol.innerText = 'Área asignada';
+            } else {
+                this.campoExtraRol.style.display = 'none';
+            }
+        }
+    }
+
+    urlObtenerPerfil(id) {
+        const map = {
+            Paciente: `${API_BASE}/pacientes/${id}`,
+            Secretario: `${API_BASE}/secretario/perfil/${id}`,
+            Especialista: `${API_BASE}/especialista/perfil/${id}`,
+            Administrador: `${API_BASE}/admin/perfil/${id}`
+        };
+        return map[this.rolCanonico] || map.Paciente;
+    }
+
+    urlActualizarPerfil(id) {
+        return this.urlObtenerPerfil(id);
     }
 
     renderizarBarraLateral(usuario) {
-        this.sideAvatar.src = usuario.fotoUrl || `https://ui-avatars.com/api/?name=${usuario.nombre}+${usuario.apellido}&background=28a745&color=fff`;
+        const bg = this.rolCanonico === 'Paciente' ? '28a745' : '0056b3';
+        this.sideAvatar.src = usuario.fotoUrl ||
+            `https://ui-avatars.com/api/?name=${usuario.nombre}+${usuario.apellido}&background=${bg}&color=fff`;
         this.sideNombre.innerText = `${usuario.nombre} ${usuario.apellido}`;
         this.sideCedula.innerText = usuario.id;
         this.sideCorreo.innerText = usuario.correo;
@@ -64,22 +154,32 @@ class PerfilView {
 
     cargarDatosFormulario(usuario) {
         this.inputID.value = usuario.id;
-        this.inputRol.value = 'Paciente';
+        this.inputRol.value = this.rolCanonico;
         this.inputNombre.value = usuario.nombre;
         this.inputApellido.value = usuario.apellido;
         this.inputCorreo.value = usuario.correo;
         this.inputTelefono.value = usuario.telefono || '';
         this.inputFoto.value = usuario.fotoUrl || '';
         this.inputBiografia.value = usuario.biografia || '';
+
+        if (this.inputExtraRol) {
+            if (this.rolCanonico === 'Especialista') {
+                this.inputExtraRol.value = usuario.especialidad || '';
+            } else if (this.rolCanonico === 'Secretario') {
+                this.inputExtraRol.value = usuario.areaAsignada || '';
+            }
+        }
     }
 
     obtenerDatosFrescos(id) {
-        fetch(`${API_BASE}/pacientes/${id}`)
+        fetch(this.urlObtenerPerfil(id))
             .then(res => {
                 if (!res.ok) throw new Error();
                 return res.json();
             })
             .then(data => {
+                if (this.rolCanonico === 'Especialista') data.rol = 'Especialista';
+                if (this.rolCanonico === 'Secretario') data.rol = 'Secretario';
                 this.usuarioActivo = data;
                 localStorage.setItem('usuarioActivo', JSON.stringify(data));
                 this.renderizarBarraLateral(data);
@@ -105,6 +205,7 @@ class PerfilView {
     }
 
     validarTelefono() {
+        if (this.rolCanonico !== 'Paciente') return true;
         const val = this.inputTelefono.value.trim();
         const fb = document.getElementById('telefonoFeedback');
         if (val) {
@@ -155,14 +256,19 @@ class PerfilView {
 
         const payload = {
             modificadoPor: this.usuarioActivo.id,
-            rolModificadoPor: 'Paciente',
-            correo: this.inputCorreo.value.trim(),
-            telefono: this.inputTelefono.value.trim(),
-            fotoUrl: this.inputFoto.value.trim(),
-            biografia: this.inputBiografia.value.trim()
+            rolModificadoPor: this.rolCanonico,
+            correo: this.inputCorreo.value.trim()
         };
 
-        fetch(`${API_BASE}/pacientes/${this.usuarioActivo.id}`, {
+        if (this.rolCanonico === 'Paciente') {
+            payload.telefono = this.inputTelefono.value.trim();
+            payload.fotoUrl = this.inputFoto.value.trim();
+            payload.biografia = this.inputBiografia.value.trim();
+        } else if (this.rolCanonico !== 'Administrador') {
+            payload.fotoUrl = this.inputFoto.value.trim();
+        }
+
+        fetch(this.urlActualizarPerfil(this.usuarioActivo.id), {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
@@ -173,7 +279,10 @@ class PerfilView {
                 this.btnGuardar.disabled = false;
                 if (result.status === 200) {
                     this.mostrarToast(result.body.mensaje || 'Datos actualizados.');
-                    this.usuarioActivo = result.body.usuario;
+                    const actualizado = result.body.usuario || result.body;
+                    if (this.rolCanonico === 'Especialista') actualizado.rol = 'Especialista';
+                    if (this.rolCanonico === 'Secretario') actualizado.rol = 'Secretario';
+                    this.usuarioActivo = actualizado;
                     localStorage.setItem('usuarioActivo', JSON.stringify(this.usuarioActivo));
                     this.renderizarBarraLateral(this.usuarioActivo);
                     this.cargarDatosFormulario(this.usuarioActivo);

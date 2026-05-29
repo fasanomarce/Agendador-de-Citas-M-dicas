@@ -149,6 +149,67 @@ class AdminController {
             especialidad: especialidades[nombreLimpio]
         });
     }
+
+    static obtenerMiPerfil(req, res) {
+        const id = String(req.params.id);
+        const admins = store.leerAdmins();
+        const admin = admins.find(a => String(a.id) === id);
+        if (!admin) {
+            return res.status(404).json({ error: 'Administrador no encontrado.' });
+        }
+        return res.json({
+            id: admin.id,
+            nombre: admin.nombre,
+            apellido: admin.apellido,
+            correo: admin.correo,
+            rol: 'Administrador',
+            fotoUrl: `https://ui-avatars.com/api/?name=${admin.nombre}+${admin.apellido}&background=0056b3&color=fff`
+        });
+    }
+
+    static actualizarMiPerfil(req, res) {
+        const id = String(req.params.id);
+        const { modificadoPor, correo } = req.body;
+
+        if (!modificadoPor || String(modificadoPor) !== id) {
+            return res.status(403).json({ error: 'Solo puede modificar su propio perfil.' });
+        }
+
+        const admins = store.leerAdmins();
+        const indice = admins.findIndex(a => String(a.id) === id);
+        if (indice === -1) {
+            return res.status(404).json({ error: 'Administrador no encontrado.' });
+        }
+
+        const admin = admins[indice];
+        const nuevoCorreo = correo ? store.sanitizar(String(correo).trim().toLowerCase()) : admin.correo;
+
+        if (correo) {
+            const regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!regexCorreo.test(nuevoCorreo)) {
+                return res.status(400).json({ error: 'El correo electrónico tiene un formato inválido.' });
+            }
+            if (nuevoCorreo !== admin.correo && store.correoExisteGlobal(nuevoCorreo, id)) {
+                return res.status(400).json({ error: 'El correo electrónico ya está en uso.' });
+            }
+        }
+
+        admin.correo = nuevoCorreo;
+        admins[indice] = admin;
+        store.guardarAdmins(admins);
+
+        return res.json({
+            mensaje: 'Datos de contacto actualizados de forma inmediata.',
+            usuario: {
+                id: admin.id,
+                nombre: admin.nombre,
+                apellido: admin.apellido,
+                correo: admin.correo,
+                rol: 'Administrador',
+                fotoUrl: `https://ui-avatars.com/api/?name=${admin.nombre}+${admin.apellido}&background=0056b3&color=fff`
+            }
+        });
+    }
 }
 
 module.exports = AdminController;

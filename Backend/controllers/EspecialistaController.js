@@ -79,6 +79,57 @@ class EspecialistaController {
             cita: citas[indice]
         });
     }
+
+    static actualizarMiPerfil(req, res) {
+        const id = String(req.params.id);
+        const { modificadoPor, correo, fotoUrl } = req.body;
+
+        if (!modificadoPor || String(modificadoPor) !== id) {
+            return res.status(403).json({ error: 'Solo puede modificar su propio perfil.' });
+        }
+
+        const personal = store.leerPersonal();
+        const indice = personal.especialistas.findIndex(e => String(e.id) === id);
+        if (indice === -1) {
+            return res.status(404).json({ error: 'Especialista no encontrado.' });
+        }
+
+        const esp = personal.especialistas[indice];
+        const nuevoCorreo = correo ? store.sanitizar(String(correo).trim().toLowerCase()) : esp.correo;
+
+        if (correo) {
+            const regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!regexCorreo.test(nuevoCorreo)) {
+                return res.status(400).json({ error: 'El correo electrónico tiene un formato inválido.' });
+            }
+            if (nuevoCorreo !== esp.correo && store.correoExisteGlobal(nuevoCorreo, id)) {
+                return res.status(400).json({ error: 'El correo electrónico ya está en uso.' });
+            }
+        }
+
+        esp.correo = nuevoCorreo;
+        if (fotoUrl !== undefined && fotoUrl !== '') {
+            esp.fotoUrl = String(fotoUrl).trim();
+        }
+
+        personal.especialistas[indice] = esp;
+        store.guardarPersonal(personal);
+
+        return res.json({
+            mensaje: 'Datos de contacto actualizados de forma inmediata.',
+            usuario: {
+                id: esp.id,
+                nombre: esp.nombre,
+                apellido: esp.apellido,
+                correo: esp.correo,
+                rol: 'Especialista',
+                rolClinico: esp.rol,
+                especialidad: esp.especialidad,
+                color: esp.color,
+                fotoUrl: esp.fotoUrl
+            }
+        });
+    }
 }
 
 module.exports = EspecialistaController;

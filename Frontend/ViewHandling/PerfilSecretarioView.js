@@ -15,8 +15,8 @@ class PerfilSecretarioView {
             return;
         }
         this.usuarioActivo = JSON.parse(sesion);
-        if (this.usuarioActivo.rol !== 'Secretario') {
-            window.location.href = 'Perfil.html';
+        if (!esSecretario(this.usuarioActivo)) {
+            window.location.href = destinoInicioSesion(this.usuarioActivo);
             return;
         }
 

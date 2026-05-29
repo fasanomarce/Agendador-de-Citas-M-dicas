@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Perfil - Paciente</title>
+    <title>Mi Perfil - Agendador de Citas</title>
     <link rel="stylesheet" href="styles.css">
     <style>
         .perfil-container {
@@ -138,11 +138,7 @@
     <header class="header">
         <h1 class="header_logo">Agendador de Citas</h1>
         <nav class="nav" id="mainNav">
-            <ul class="nav__list">
-                <li class="nav__item"><a href="MenuCitas.html" class="nav__link">Menú Principal</a></li>
-                <li class="nav__item"><a href="ConsultarCitas.html" class="nav__link">Consultar Citas</a></li>
-                <li class="nav__item"><a href="Perfil.html" class="nav__link" style="background-color: rgba(255,255,255,0.3);">Mi Perfil</a></li>
-            </ul>
+            <ul class="nav__list"><!-- Navegación según rol (PerfilView.js) --></ul>
         </nav>
     </header>
 
@@ -164,7 +160,7 @@
         <!-- Panel Derecho: Edición / Gestión -->
         <section class="perfil-main">
             
-            <!-- Formulario de Edición (solo Paciente) -->
+            <!-- Formulario de edición de perfil propio (todos los roles) -->
             <h2 id="tituloFormulario">Modificar Mis Datos de Contacto</h2>
             <p id="subtituloFormulario">Actualice su información de contacto. Recuerde que el ID y Rol son datos inalterables de seguridad.</p>
             
@@ -204,23 +200,25 @@
                         <span id="correoFeedback" class="feedback"></span>
                     </div>
 
-                    <!-- Teléfono -->
-                    <div class="input-group">
+                    <div class="input-group" id="campoExtraRol" style="display: none;">
+                        <label id="labelExtraRol">Detalle del rol</label>
+                        <input type="text" id="inputExtraRol" class="input-disabled" readonly>
+                    </div>
+
+                    <div class="input-group" id="grupoTelefono">
                         <label for="inputTelefono">Número de Teléfono</label>
-                        <input type="text" id="inputTelefono" placeholder="Ej. 0987654321" required>
+                        <input type="text" id="inputTelefono" placeholder="Ej. 0987654321">
                         <span id="telefonoFeedback" class="feedback"></span>
                     </div>
 
-                    <!-- URL Foto de Perfil / Avatar -->
-                    <div class="input-group">
+                    <div class="input-group" id="grupoFoto">
                         <label for="inputFoto">Foto de Perfil (URL)</label>
                         <input type="text" id="inputFoto" placeholder="https://ejemplo.com/avatar.jpg">
                     </div>
 
-                    <!-- Biografía -->
-                    <div class="input-group">
+                    <div class="input-group" id="grupoBiografia">
                         <label for="inputBiografia">Biografía / Observaciones Médicas</label>
-                        <textarea id="inputBiografia" rows="4" placeholder="Breve descripción del historial de contacto u observaciones del paciente..."></textarea>
+                        <textarea id="inputBiografia" rows="4" placeholder="Breve descripción del historial de contacto u observaciones..."></textarea>
                     </div>
                 </fieldset>
 

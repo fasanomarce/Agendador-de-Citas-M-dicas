@@ -14,7 +14,9 @@ class PerfilEspecialistaView {
         }
         this.usuarioActivo = JSON.parse(sesion);
         if (!esEspecialista(this.usuarioActivo)) {
-            window.location.href = destinoInicioSesion(this.usuarioActivo);
+            window.location.href = typeof destinoInicioSesion === 'function'
+                ? destinoInicioSesion(this.usuarioActivo)
+                : 'login.html';
             return;
         }
         if (this.usuarioActivo.rol !== 'Especialista') {

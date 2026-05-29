@@ -17,7 +17,7 @@ class PerfilAdminView {
         }
         this.usuarioActivo = JSON.parse(sesion);
         if (this.usuarioActivo.rol !== 'Administrador') {
-            window.location.href = 'Perfil.html';
+            window.location.href = destinoInicioSesion(this.usuarioActivo);
             return;
         }
 

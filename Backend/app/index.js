@@ -30,10 +30,13 @@ app.get('/api/pacientes/:id/citas', pacienteController.historialCitas);
 
 // Especialista
 app.get('/api/especialista/perfil/:id', especialistaController.obtenerPerfil);
+app.put('/api/especialista/perfil/:id', especialistaController.actualizarMiPerfil);
 app.get('/api/especialista/citas', especialistaController.listarCitasAgendadas);
 app.patch('/api/especialista/citas/:id/completar', especialistaController.marcarCitaCompletada);
 
 // Secretario
+app.get('/api/secretario/perfil/:id', secretarioController.obtenerMiPerfil);
+app.put('/api/secretario/perfil/:id', secretarioController.actualizarMiPerfil);
 app.get('/api/secretario/pacientes', secretarioController.listarPacientes);
 app.put('/api/secretario/pacientes/:id', secretarioController.actualizarPaciente);
 app.get('/api/secretario/citas', secretarioController.listarCitas);
@@ -43,6 +46,8 @@ app.post('/api/secretario/bloques', secretarioController.asignarBloque);
 app.get('/api/secretario/especialistas', secretarioController.listarEspecialistas);
 
 // Administrador
+app.get('/api/admin/perfil/:id', adminController.obtenerMiPerfil);
+app.put('/api/admin/perfil/:id', adminController.actualizarMiPerfil);
 app.post('/api/admin/personal', adminController.registrarPersonal);
 app.get('/api/admin/especialidades', adminController.listarEspecialidades);
 app.post('/api/admin/especialidades', adminController.agregarEspecialidad);
@@ -59,6 +64,13 @@ app.get('/api/usuarios/:id', (req, res) => {
     const personal = require('../utils/usuarioStore').leerPersonal();
     if (personal.especialistas.some(e => String(e.id) === String(req.params.id))) {
         return especialistaController.obtenerPerfil(req, res);
+    }
+    if (personal.secretarios.some(s => String(s.id) === String(req.params.id))) {
+        return secretarioController.obtenerMiPerfil(req, res);
+    }
+    const admins = require('../utils/usuarioStore').leerAdmins();
+    if (admins.some(a => String(a.id) === String(req.params.id))) {
+        return adminController.obtenerMiPerfil(req, res);
     }
     return res.status(404).json({ error: 'Usuario no encontrado.' });
 });

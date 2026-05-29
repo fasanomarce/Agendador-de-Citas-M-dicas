@@ -82,6 +82,17 @@ class SecretarioController {
     }
 
     static listarCitas(req, res) {
+        const { secretarioId } = req.query;
+        if (!secretarioId) {
+            return res.status(400).json({ error: 'Debe indicar el secretarioId.' });
+        }
+
+        const personal = store.leerPersonal();
+        const esSecretario = personal.secretarios.some(s => String(s.id) === String(secretarioId));
+        if (!esSecretario) {
+            return res.status(403).json({ error: 'Acceso denegado. Solo secretarios autorizados.' });
+        }
+
         const citas = citaStore.leerCitas().map(citaStore.normalizarEstado);
         return res.json(citas);
     }

@@ -7,7 +7,8 @@
     "fecha": "2026-05-28",
     "hora": "11:00",
     "id": 1779835686283,
-    "estado": "completada"
+    "estado": "completada",
+    "pacienteId": "12345678"
   },
   {
     "nombre": "sdgs",

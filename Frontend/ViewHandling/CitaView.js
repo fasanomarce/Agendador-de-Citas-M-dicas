@@ -138,7 +138,7 @@ class CitaView {
 
     guardarReservacion(evento) {
         evento.preventDefault();
-        
+
         const citaNueva = new Cita(
             document.getElementById('nombre').value,
             document.getElementById('apellido').value,
@@ -148,7 +148,14 @@ class CitaView {
             document.getElementById('hora').value
         );
 
-        // envia datos a node.js
+        const sesionJSON = localStorage.getItem('usuarioActivo');
+        if (sesionJSON) {
+            const usuario = JSON.parse(sesionJSON);
+            if (usuario.id) {
+                citaNueva.pacienteId = String(usuario.id);
+            }
+        }
+
         fetch('http://localhost:3000/api/citas', {
             method: 'POST',
             headers: {

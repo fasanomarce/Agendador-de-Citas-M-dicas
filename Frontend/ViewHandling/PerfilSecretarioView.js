@@ -120,7 +120,7 @@ class PerfilSecretarioView {
     }
 
     cargarCitas() {
-        fetch(`${API_BASE}/secretario/citas`)
+        fetch(`${API_BASE}/secretario/citas?secretarioId=${encodeURIComponent(this.usuarioActivo.id)}`)
             .then(res => res.json())
             .then(citas => {
                 const cont = document.getElementById('listaCitas');

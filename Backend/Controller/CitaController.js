@@ -26,6 +26,9 @@ class CitaController {
             // asigna un id y estado inicial
             nuevaCita.id = Date.now();
             if (!nuevaCita.estado) nuevaCita.estado = 'pendiente';
+            if (nuevaCita.pacienteId != null) {
+                nuevaCita.pacienteId = String(nuevaCita.pacienteId);
+            }
             
             // agrega la cita nueva al arreglo
             citas.push(nuevaCita);
@@ -38,11 +41,10 @@ class CitaController {
         })
     }
 
-    // para consultar cita
+    // Consulta general restringida: usar endpoints por rol
     static cargarCitas(req, res) {
-        CitaController.fs.readFile(CitaController.rutaJson, 'utf8', (err, data) => {
-            if (err) return res.status(500).json({error: "Error leyendo archivo" });
-            res.json(JSON.parse(data));
+        return res.status(403).json({
+            error: 'Use el endpoint de citas de su rol: /api/pacientes/:id/citas o /api/secretario/citas.'
         });
     }
 }

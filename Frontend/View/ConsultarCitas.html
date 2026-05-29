@@ -5,8 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Consultar Citas</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="../ViewHandling/rolUtils.js"></script>
     <script>
-        if (!localStorage.getItem('usuarioActivo')) {
+        const sesionCitas = localStorage.getItem('usuarioActivo');
+        if (!sesionCitas) {
             window.location.href = 'login.html';
         }
     </script>
@@ -27,8 +29,8 @@
 
     <main>
         <div class="form-container container-consultas">
-            <h2>Mis Citas Reservadas</h2>
-            <p>A continuación puedes ver los detalles de las citas médicas que tienes programadas.</p>
+            <h2 id="tituloConsulta">Mis Citas Reservadas</h2>
+            <p id="subtituloConsulta">A continuación puedes ver los detalles de las citas médicas que tienes programadas.</p>
             
             <!-- Contenedor donde se insertarán las citas dinámicamente -->
             <div id="contenedorCitas" style="margin-top: 20px;">

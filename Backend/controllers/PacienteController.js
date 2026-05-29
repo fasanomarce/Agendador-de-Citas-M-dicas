@@ -97,7 +97,8 @@ class PacienteController {
 
         const citas = citaStore.leerCitas().map(citaStore.normalizarEstado);
         const historial = citas.filter(
-            c => c.nombre === paciente.nombre && c.apellido === paciente.apellido
+            c => String(c.pacienteId) === id ||
+                (c.nombre === paciente.nombre && c.apellido === paciente.apellido)
         );
 
         return res.json(historial);

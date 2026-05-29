@@ -74,6 +74,7 @@ class PerfilView {
                 <li class="nav__item"><a href="Perfil.html" class="nav__link" ${activo}>Mi Perfil</a></li>`,
             Secretario: `
                 <li class="nav__item"><a href="PerfilSecretario.html" class="nav__link">Operaciones</a></li>
+                <li class="nav__item"><a href="ConsultarCitas.html" class="nav__link">Consultar Citas</a></li>
                 <li class="nav__item"><a href="Perfil.html" class="nav__link" ${activo}>Mi Perfil</a></li>`,
             Especialista: `
                 <li class="nav__item"><a href="PerfilEspecialista.html" class="nav__link">Mis Citas</a></li>

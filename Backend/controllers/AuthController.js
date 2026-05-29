@@ -59,74 +59,86 @@ class AuthController {
     }
 
     static login(req, res) {
-        let { correo, contrasena } = req.body;
+        try {
+            let { correo, contrasena } = req.body;
 
-        if (!correo || !contrasena) {
-            return res.status(400).json({ error: 'Debe ingresar el correo y la contraseña.' });
+            if (!correo || !contrasena) {
+                return res.status(400).json({ error: 'Debe ingresar el correo y la contraseña.' });
+            }
+
+            const correoNorm = store.normalizarCorreo(correo);
+            contrasena = String(contrasena);
+
+            const pacientes = store.leerPacientes();
+            const paciente = pacientes.find(p => store.normalizarCorreo(p.correo) === correoNorm);
+            if (paciente && store.contrasenaCoincide(contrasena, paciente.contrasena)) {
+                return res.json({
+                    id: paciente.id,
+                    nombre: paciente.nombre,
+                    apellido: paciente.apellido,
+                    correo: paciente.correo,
+                    telefono: paciente.telefono || '',
+                    fotoUrl: paciente.fotoUrl,
+                    biografia: paciente.biografia || '',
+                    rol: 'Paciente'
+                });
+            }
+
+            const personal = store.leerPersonal();
+            const especialista = personal.especialistas.find(
+                e => store.normalizarCorreo(e.correo) === correoNorm
+            );
+            if (especialista && store.contrasenaCoincide(contrasena, especialista.contrasena)) {
+                const nombre = especialista.nombre;
+                const apellido = especialista.apellido;
+                return res.json({
+                    id: especialista.id,
+                    nombre,
+                    apellido,
+                    correo: especialista.correo,
+                    rol: 'Especialista',
+                    rolClinico: especialista.rol || 'Médico Titular',
+                    especialidad: especialista.especialidad,
+                    color: especialista.color,
+                    fotoUrl: especialista.fotoUrl ||
+                        `https://ui-avatars.com/api/?name=${nombre}+${apellido}&background=2f4f4f&color=fff`
+                });
+            }
+
+            const secretario = personal.secretarios.find(
+                s => store.normalizarCorreo(s.correo) === correoNorm
+            );
+            if (secretario && store.contrasenaCoincide(contrasena, secretario.contrasena)) {
+                return res.json({
+                    id: secretario.id,
+                    nombre: secretario.nombre,
+                    apellido: secretario.apellido,
+                    correo: secretario.correo,
+                    rol: 'Secretario',
+                    rolOriginal: secretario.rol,
+                    areaAsignada: secretario.areaAsignada,
+                    fotoUrl: secretario.fotoUrl
+                });
+            }
+
+            const admins = store.leerAdmins();
+            const admin = admins.find(a => store.normalizarCorreo(a.correo) === correoNorm);
+            if (admin && store.contrasenaCoincide(contrasena, admin.contrasena)) {
+                return res.json({
+                    id: admin.id,
+                    nombre: admin.nombre,
+                    apellido: admin.apellido,
+                    correo: admin.correo,
+                    rol: 'Administrador',
+                    fotoUrl: `https://ui-avatars.com/api/?name=${admin.nombre}+${admin.apellido}&background=0056b3&color=fff`
+                });
+            }
+
+            return res.status(401).json({ error: 'Credenciales de acceso incorrectas.' });
+        } catch (err) {
+            console.error('[Auth] Error en login:', err);
+            return res.status(500).json({ error: 'Error interno al iniciar sesión.' });
         }
-
-        correo = correo.trim().toLowerCase();
-        const contrasenaCifrada = store.cifrarPassword(contrasena);
-
-        const pacientes = store.leerPacientes();
-        const paciente = pacientes.find(p => p.correo === correo);
-        if (paciente && (paciente.contrasena === contrasena || paciente.contrasena === contrasenaCifrada)) {
-            return res.json({
-                id: paciente.id,
-                nombre: paciente.nombre,
-                apellido: paciente.apellido,
-                correo: paciente.correo,
-                telefono: paciente.telefono || '',
-                fotoUrl: paciente.fotoUrl,
-                biografia: paciente.biografia || '',
-                rol: paciente.rol
-            });
-        }
-
-        const personal = store.leerPersonal();
-        const especialista = personal.especialistas.find(e => e.correo === correo);
-        if (especialista && (especialista.contrasena === contrasena || especialista.contrasena === contrasenaCifrada)) {
-            return res.json({
-                id: especialista.id,
-                nombre: especialista.nombre,
-                apellido: especialista.apellido,
-                correo: especialista.correo,
-                rol: 'Especialista',
-                rolClinico: especialista.rol || 'Médico Titular',
-                especialidad: especialista.especialidad,
-                color: especialista.color,
-                fotoUrl: especialista.fotoUrl
-            });
-        }
-
-        const secretario = personal.secretarios.find(s => s.correo === correo);
-        if (secretario && (secretario.contrasena === contrasena || secretario.contrasena === contrasenaCifrada)) {
-            return res.json({
-                id: secretario.id,
-                nombre: secretario.nombre,
-                apellido: secretario.apellido,
-                correo: secretario.correo,
-                rol: 'Secretario',
-                rolOriginal: secretario.rol,
-                areaAsignada: secretario.areaAsignada,
-                fotoUrl: secretario.fotoUrl
-            });
-        }
-
-        const admins = store.leerAdmins();
-        const admin = admins.find(a => a.correo === correo);
-        if (admin && (admin.contrasena === contrasena || admin.contrasena === contrasenaCifrada)) {
-            return res.json({
-                id: admin.id,
-                nombre: admin.nombre,
-                apellido: admin.apellido,
-                correo: admin.correo,
-                rol: 'Administrador',
-                fotoUrl: `https://ui-avatars.com/api/?name=${admin.nombre}+${admin.apellido}&background=0056b3&color=fff`
-            });
-        }
-
-        return res.status(401).json({ error: 'Credenciales de acceso incorrectas.' });
     }
 }
 

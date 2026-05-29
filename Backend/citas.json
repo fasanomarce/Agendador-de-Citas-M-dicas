@@ -6,7 +6,8 @@
     "doctor": "Dr. Carlos López",
     "fecha": "2026-05-28",
     "hora": "11:00",
-    "id": 1779835686283
+    "id": 1779835686283,
+    "estado": "completada"
   },
   {
     "nombre": "sdgs",
@@ -15,6 +16,7 @@
     "doctor": "Dra. María Gómez",
     "fecha": "2026-05-28",
     "hora": "11:00",
-    "id": 1779846950869
+    "id": 1779846950869,
+    "estado": "pendiente"
   }
 ]

@@ -51,15 +51,12 @@ class LoginView {
         })
         .then(result => {
             if (result.status === 200) {
-                localStorage.setItem('usuarioActivo', JSON.stringify(result.body));
-                const rol = result.body.rol;
-                const destinos = {
-                    Paciente: 'MenuCitas.html',
-                    Secretario: 'PerfilSecretario.html',
-                    Especialista: 'PerfilEspecialista.html',
-                    Administrador: 'PerfilAdmin.html'
-                };
-                window.location.href = destinos[rol] || 'MenuCitas.html';
+                const usuario = result.body;
+                if (usuario.rol !== 'Paciente' && esEspecialista(usuario)) {
+                    usuario.rol = 'Especialista';
+                }
+                localStorage.setItem('usuarioActivo', JSON.stringify(usuario));
+                window.location.href = destinoInicioSesion(usuario);
             } else {
                 this.mostrarToast(result.body.error || "Credenciales incorrectas.");
             }

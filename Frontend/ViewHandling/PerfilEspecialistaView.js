@@ -13,9 +13,13 @@ class PerfilEspecialistaView {
             return;
         }
         this.usuarioActivo = JSON.parse(sesion);
-        if (this.usuarioActivo.rol !== 'Especialista') {
-            window.location.href = 'Perfil.html';
+        if (!esEspecialista(this.usuarioActivo)) {
+            window.location.href = destinoInicioSesion(this.usuarioActivo);
             return;
+        }
+        if (this.usuarioActivo.rol !== 'Especialista') {
+            this.usuarioActivo.rol = 'Especialista';
+            localStorage.setItem('usuarioActivo', JSON.stringify(this.usuarioActivo));
         }
 
         document.getElementById('tituloBienvenida').innerText =

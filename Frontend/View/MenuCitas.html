@@ -5,9 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Especialidades Médicas</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="../ViewHandling/rolUtils.js"></script>
     <script>
-        if (!localStorage.getItem('usuarioActivo')) {
+        const sesionMenu = localStorage.getItem('usuarioActivo');
+        if (!sesionMenu) {
             window.location.href = 'login.html';
+        } else {
+            const u = JSON.parse(sesionMenu);
+            if (u.rol !== 'Paciente') {
+                window.location.href = destinoInicioSesion(u);
+            }
         }
     </script>
 </head>

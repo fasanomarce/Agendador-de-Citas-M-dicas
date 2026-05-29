@@ -36,7 +36,7 @@ class PerfilView {
         this.usuarioActivo = JSON.parse(sesionJSON);
 
         if (this.usuarioActivo.rol !== 'Paciente') {
-            this.redirigirPorRol(this.usuarioActivo.rol);
+            this.redirigirPorRol();
             return;
         }
 
@@ -51,13 +51,8 @@ class PerfilView {
         this.form.addEventListener('submit', (e) => this.handleSubmit(e));
     }
 
-    redirigirPorRol(rol) {
-        const destinos = {
-            Secretario: 'PerfilSecretario.html',
-            Especialista: 'PerfilEspecialista.html',
-            Administrador: 'PerfilAdmin.html'
-        };
-        window.location.href = destinos[rol] || 'MenuCitas.html';
+    redirigirPorRol() {
+        window.location.href = destinoInicioSesion(this.usuarioActivo);
     }
 
     renderizarBarraLateral(usuario) {

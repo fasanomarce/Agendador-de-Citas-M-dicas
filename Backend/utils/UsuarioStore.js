@@ -20,10 +20,25 @@ function guardarPacientes(pacientes) {
 
 function leerPersonal() {
     try {
-        return JSON.parse(fs.readFileSync(rutaPersonal, 'utf8') || '{"especialistas":[],"secretarios":[]}');
+        const data = JSON.parse(fs.readFileSync(rutaPersonal, 'utf8') || '{}');
+        return {
+            especialistas: Array.isArray(data.especialistas) ? data.especialistas : [],
+            secretarios: Array.isArray(data.secretarios) ? data.secretarios : []
+        };
     } catch {
         return { especialistas: [], secretarios: [] };
     }
+}
+
+function normalizarCorreo(correo) {
+    if (!correo || typeof correo !== 'string') return '';
+    return correo.trim().toLowerCase();
+}
+
+function contrasenaCoincide(ingresada, almacenada) {
+    if (almacenada == null) return false;
+    const cifrada = cifrarPassword(ingresada);
+    return almacenada === ingresada || almacenada === cifrada;
 }
 
 function guardarPersonal(personal) {
@@ -109,5 +124,7 @@ module.exports = {
     cifrarPassword,
     sanitizar,
     correoExisteGlobal,
-    idExisteGlobal
+    idExisteGlobal,
+    normalizarCorreo,
+    contrasenaCoincide
 };

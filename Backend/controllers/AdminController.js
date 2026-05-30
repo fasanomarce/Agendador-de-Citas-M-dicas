@@ -64,7 +64,7 @@ class AdminController {
                 nombre: sNombre,
                 apellido: sApellido,
                 correo: sCorreo,
-                contrasena: contrasena,
+                contrasena: sContraCifrada,
                 especialidad: sEspec,
                 rol: sRolClinico,
                 color,
@@ -83,7 +83,7 @@ class AdminController {
                 nombre: sNombre,
                 apellido: sApellido,
                 correo: sCorreo,
-                contrasena: contrasena,
+                contrasena: sContraCifrada,
                 areaAsignada: sArea,
                 rol: sRolAdmin,
                 color: '4682B4',
@@ -96,7 +96,7 @@ class AdminController {
                 nombre: sNombre,
                 apellido: sApellido,
                 correo: sCorreo,
-                contrasena: contrasena,
+                contrasena: sContraCifrada,
                 rol: 'Administrador'
             });
             store.guardarAdmins(admins);

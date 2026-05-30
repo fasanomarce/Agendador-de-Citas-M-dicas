@@ -6,5 +6,13 @@
     "correo": "admin@clinica.com",
     "contrasena": "MTIz",
     "rol": "Administrador"
+  },
+  {
+    "id": "88888888",
+    "nombre": "john",
+    "apellido": "quest",
+    "correo": "jonh@admin.com",
+    "contrasena": "NDU2",
+    "rol": "Administrador"
   }
 ]

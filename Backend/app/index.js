@@ -50,6 +50,7 @@ app.get('/api/admin/perfil/:id', adminController.obtenerMiPerfil);
 app.put('/api/admin/perfil/:id', adminController.actualizarMiPerfil);
 app.post('/api/admin/personal', adminController.registrarPersonal);
 app.get('/api/admin/especialidades', adminController.listarEspecialidades);
+app.get('/api/admin/doctores', adminController.listarDoctores);
 app.post('/api/admin/especialidades', adminController.agregarEspecialidad);
 
 // Compatibilidad temporal con rutas anteriores

@@ -118,12 +118,26 @@ class AdminController {
         return res.json(Object.keys(especialidades));
     }
 
+    static listarDoctores(req, res) {
+        const personal = store.leerPersonal();
+        const doctores = personal.especialistas.map(esp => ({
+            id: esp.id,
+            nombre: esp.nombre,
+            apellido: esp.apellido,
+            especialidad: esp.especialidad
+        }));
+        return res.json(doctores);
+    }
+
     static agregarEspecialidad(req, res) {
-        const { creadorRol, nombre, codigo, ubicacion, horario, descripcion } = req.body;
+        // 1. Extraemos TODOS los datos (¡incluyendo doctoresAsignados!)
+        const { creadorRol, nombre, codigo, ubicacion, horario, descripcion, doctoresAsignados } = req.body;
 
         if (creadorRol !== 'Administrador') {
             return res.status(403).json({ error: 'Acceso denegado. Solo administradores pueden configurar especialidades.' });
         }
+
+        // 2. Instanciamos la clase Modelo
         const nuevaEspecialidad = new Especialidad(
             nombre ? store.sanitizar(nombre.trim()) : null,
             codigo ? store.sanitizar(codigo.trim()) : null,
@@ -132,12 +146,23 @@ class AdminController {
             descripcion ? store.sanitizar(descripcion.trim()) : null,
             doctoresAsignados || []
         );
-        /* Si quieres aplicar la regla de "Obligatoriamente debe tener 1 doctor",  descomenta estas líneas:
-        
+
+        // 3. Validación interna del objeto
+        if (!nuevaEspecialidad.esValida()) {
+            return res.status(400).json({ error: 'Complete todos los campos de la especialidad.' });
+        }
+
+        const especialidades = store.leerEspecialidades();
+        if (especialidades[nuevaEspecialidad.nombre]) {
+            return res.status(400).json({ error: 'Esta especialidad médica ya existe en el sistema.' });
+        }
+
+        // 4. Regla de Negocio (ERS): Obligatorio un doctor
         if (nuevaEspecialidad.doctoresAsignados.length === 0) {
             return res.status(400).json({ error: 'Debe asignar al menos un especialista a esta área.' });
         }
-        */
+
+        // 5. Guardar
         especialidades[nuevaEspecialidad.nombre] = {
             codigo: nuevaEspecialidad.codigo,
             ubicacion: nuevaEspecialidad.ubicacion,
@@ -145,46 +170,12 @@ class AdminController {
             descripcion: nuevaEspecialidad.descripcion,
             doctoresAsignados: nuevaEspecialidad.doctoresAsignados
         };
-            store.guardarEspecialidades(especialidades);
-
-            return res.status(201).json({
-                mensaje: `Especialidad "${nuevaEspecialidad.nombre}" registrada correctamente.`,
-                especialidad: especialidades[nuevaEspecialidad.nombre]
-            });
-
-        if (!nuevaEspecialidad.esValida()) {
-            return res.status(400).json({ error: 'Complete todos los campos de la especialidad.' });
-        }
-
-        const especialidades = store.leerEspecialidades();
-
-        if (especialidades[nuevaEspecialidad.nombre]) {
-            return res.status(400).json({ error: 'Esta especialidad médica ya existe en el sistema.' });
-        }
-
-        if (!nombre || !codigo || !ubicacion || !horario || !descripcion) {
-            return res.status(400).json({ error: 'Complete todos los campos de la especialidad.' });
-        }
-
-        const nombreLimpio = store.sanitizar(nombre.trim());
-        const especialidades = store.leerEspecialidades();
-
-        if (especialidades[nombreLimpio]) {
-            return res.status(400).json({ error: 'Esta especialidad médica ya existe en el sistema.' });
-        }
-
-        especialidades[nombreLimpio] = {
-            codigo: store.sanitizar(codigo.trim()),
-            ubicacion: store.sanitizar(ubicacion.trim()),
-            horario: store.sanitizar(horario.trim()),
-            descripcion: store.sanitizar(descripcion.trim())
-        };
 
         store.guardarEspecialidades(especialidades);
 
         return res.status(201).json({
-            mensaje: `Especialidad "${nombreLimpio}" registrada correctamente.`,
-            especialidad: especialidades[nombreLimpio]
+            mensaje: `Especialidad "${nuevaEspecialidad.nombre}" registrada correctamente.`,
+            especialidad: especialidades[nuevaEspecialidad.nombre]
         });
     }
 

@@ -22,6 +22,7 @@ class PerfilAdminView {
         }
 
         this.cargarEspecialidadesEnSelects();
+        this.cargarDoctoresEnSelect(); // Cargar médicos disponibles en el select antes de registrar la especialidad
         document.getElementById('adminRol').addEventListener('change', () => this.toggleCampos());
         this.adminRegForm.addEventListener('submit', (e) => this.registrarPersonal(e));
         this.especialidadForm.addEventListener('submit', (e) => this.registrarEspecialidad(e));
@@ -107,13 +108,15 @@ class PerfilAdminView {
 
     registrarEspecialidad(e) {
         e.preventDefault();
+        const selectedDoctor = document.getElementById('espDoctorAsignado').value.trim();
         const payload = {
             creadorRol: 'Administrador',
             nombre: document.getElementById('espNombre').value.trim(),
             codigo: document.getElementById('espCodigo').value.trim(),
             ubicacion: document.getElementById('espUbicacion').value.trim(),
             horario: document.getElementById('espHorario').value.trim(),
-            descripcion: document.getElementById('espDescripcion').value.trim()
+            descripcion: document.getElementById('espDescripcion').value.trim(),
+            doctoresAsignados: selectedDoctor ? [selectedDoctor] : []
         };
 
         fetch(`${API_BASE}/admin/especialidades`, {

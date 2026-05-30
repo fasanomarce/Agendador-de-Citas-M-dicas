@@ -20,11 +20,21 @@
         
         <!-- Navegación principal -->
         <nav class="nav" id="mainNav" aria-label="Navegación principal">
-            <ul class="nav__list">
+            <ul class="nav__list" id="cabeceraLinks">
                 <li class="nav__item"><a href="MenuCitas.html" class="nav__link">Menú Principal</a></li>
+                <li class="nav__item"><a href="ConsultarCitas.html" class="nav__link">Consultar Citas</a></li>
+                <script>
+                    if (sesionCitas) {
+                        const usuario = JSON.parse(sesionCitas);
+                        if (usuario.rol === 'Administrador') {
+                            document.write('<li class="nav__item"><a href="PerfilAdmin.html" class="nav__link">Administración</a></li>');
+                        }
+                    }
+                </script>
                 <li class="nav__item"><a href="Perfil.html" class="nav__link">Mi Perfil</a></li>
             </ul>
         </nav>
+        
     </header>
 
     <main>

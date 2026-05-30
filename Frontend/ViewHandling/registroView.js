@@ -101,11 +101,18 @@ class RegistroView {
     mostrarToast(mensaje, esError = true) {
         this.toast.innerText = mensaje;
         this.toast.className = esError ? 'toast-notificacion error' : 'toast-notificacion';
-        this.toast.style.display = 'flex';
+        const displayType = 'flex';
+        this.toast.style.display = displayType;
+        this.toast.style.opacity = '1';
+        this.toast.style.transition = 'opacity 0.5s ease';
 
-        setTimeout(() => {
-            this.toast.style.display = 'none';
-        }, 5000);
+        if (this.toast._hideTimeout) clearTimeout(this.toast._hideTimeout);
+        if (this.toast._removeTimeout) clearTimeout(this.toast._removeTimeout);
+
+        this.toast._hideTimeout = setTimeout(() => {
+            this.toast.style.opacity = '0';
+            this.toast._removeTimeout = setTimeout(() => { this.toast.style.display = 'none'; }, 600);
+        }, 3000);
     }
 
     // Procesar Envío

@@ -2,7 +2,7 @@ class CitaController {
     // Atributos estáticos de la clase
     static fs = require('fs');
     static path = require('path');
-    static rutaJson = CitaController.path.join(__dirname, '../citas.json');
+    static rutaJson = CitaController.path.join(__dirname, '../json/citas.json');
     
     // este metodo se activa con el POST
     static guardarCita(req, res) {
@@ -21,6 +21,19 @@ class CitaController {
                     citas = [];
                 }
                 
+            }
+
+            // Validar que el paciente no tenga ya una cita activa
+            if (nuevaCita.pacienteId) {
+                const pacienteIdStr = String(nuevaCita.pacienteId);
+                // Si el paciente ya tiene cualquier cita en el sistema
+                const tieneCitaActiva = citas.some(cita => 
+                    String(cita.pacienteId) === pacienteIdStr
+                );
+
+                if (tieneCitaActiva) {
+                    return res.status(400).json({ error: "El usuario ya tiene una cita registrada." });
+                }
             }
 
             // asigna un id y estado inicial

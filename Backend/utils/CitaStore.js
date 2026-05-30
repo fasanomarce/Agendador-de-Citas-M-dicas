@@ -1,8 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const rutaCitas = path.join(__dirname, '../citas.json');
-const rutaBloques = path.join(__dirname, '../bloques.json');
+const rutaCitas = path.join(__dirname, '../json/citas.json');
+const rutaBloques = path.join(__dirname, '../json/bloques.json');
 
 function leerCitas() {
     try {

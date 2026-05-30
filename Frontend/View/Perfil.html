@@ -138,7 +138,20 @@
     <header class="header">
         <h1 class="header_logo">Agendador de Citas</h1>
         <nav class="nav" id="mainNav">
-            <ul class="nav__list"><!-- Navegación según rol (PerfilView.js) --></ul>
+            <ul class="nav__list">
+                <li class="nav__item"><a href="MenuCitas.html" class="nav__link">Menú Principal</a></li>
+                <li class="nav__item"><a href="ConsultarCitas.html" class="nav__link">Consultar Citas</a></li>
+                <script>
+                    const sesionPerfil = localStorage.getItem('usuarioActivo');
+                    if (sesionPerfil) {
+                        const usuario = JSON.parse(sesionPerfil);
+                        if (usuario.rol === 'Administrador') {
+                            document.write('<li class="nav__item"><a href="PerfilAdmin.html" class="nav__link">Administración</a></li>');
+                        }
+                    }
+                </script>
+                <li class="nav__item"><a href="Perfil.html" class="nav__link">Mi Perfil</a></li>
+            </ul>
         </nav>
     </header>
 

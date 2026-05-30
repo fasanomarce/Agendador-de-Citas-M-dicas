@@ -1,10 +1,10 @@
 const fs = require('fs');
 const path = require('path');
 
-const rutaPacientes = path.join(__dirname, '../pacientes.json');
-const rutaPersonal = path.join(__dirname, '../personal.json');
-const rutaAdmins = path.join(__dirname, '../administradores.json');
-const rutaEspecialidades = path.join(__dirname, '../especialidades.json');
+const rutaPacientes = path.join(__dirname, '../json/pacientes.json');
+const rutaPersonal = path.join(__dirname, '../json/personal.json');
+const rutaAdmins = path.join(__dirname, '../json/administradores.json');
+const rutaEspecialidades = path.join(__dirname, '../json/especialidades.json');
 
 function leerPacientes() {
     try {

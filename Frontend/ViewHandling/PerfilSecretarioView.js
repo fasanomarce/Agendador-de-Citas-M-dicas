@@ -40,8 +40,15 @@ class PerfilSecretarioView {
         const t = document.getElementById('toast');
         t.innerText = msg;
         t.className = error ? 'toast-notificacion error' : 'toast-notificacion';
-        t.style.display = 'block';
-        setTimeout(() => { t.style.display = 'none'; }, 5000);
+        const displayType = 'block';
+        t.style.display = displayType;
+        t.style.opacity = '1';
+        t.style.transition = 'opacity 0.5s ease';
+
+        if (t._hideTimeout) clearTimeout(t._hideTimeout);
+        if (t._removeTimeout) clearTimeout(t._removeTimeout);
+
+        t._hideTimeout = setTimeout(() => { t.style.opacity = '0'; t._removeTimeout = setTimeout(() => { t.style.display = 'none'; }, 600); }, 3000);
     }
 
     cargarPacientes() {

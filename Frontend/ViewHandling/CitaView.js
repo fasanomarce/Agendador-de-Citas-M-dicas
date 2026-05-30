@@ -163,12 +163,31 @@ class CitaView {
             },
             body: JSON.stringify(citaNueva) // convierte la cita a JSON
         })
-        .then(respuesta => respuesta.json()) // promesa: cuando el servidor termine de procesar, traduce la respuesta a json
-        .then(datos => {
-            alert("Cita guardada en el servidor exitosamente");
-            window.location.href = "MenuCitas.html";
+        .then(async respuesta => {
+            console.log('[CitaView] petición enviada:', citaNueva);
+            const datos = await respuesta.json();
+            console.log('[CitaView] respuesta recibida:', respuesta.status, datos);
+            if (!respuesta.ok) {
+                throw new Error(datos.error || "Error al guardar la cita");
+            }
+            return datos;
         })
-        .catch(error => console.error('Error:', error));
+        .then(datos => {
+            console.log('[CitaView] guardada, redirigiendo a ConsultarCitas.html');
+            // Redirect immediately without a blocking alert so navigation occurs reliably.
+            try {
+                const redirectUrl = window.location.origin + window.location.pathname.replace(/[^/]*$/, 'ConsultarCitas.html');
+                console.log('[CitaView] redirecting to', redirectUrl);
+                window.location.href = redirectUrl;
+            } catch (e) {
+                console.error('[CitaView] error building redirect URL, falling back to relative path', e);
+                window.location.href = 'ConsultarCitas.html';
+            }
+        })
+        .catch(error => {
+            console.error('[CitaView] Error:', error);
+            alert(error.message);
+        });
     }
 }
 

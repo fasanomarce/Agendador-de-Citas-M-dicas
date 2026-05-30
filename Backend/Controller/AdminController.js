@@ -1,6 +1,7 @@
 const Paciente = require('../Model/Paciente');
 const Especialidad = require('../Model/Especialidad');
 const store = require('../utils/usuarioStore');
+const citaStore = require('../utils/citaStore');
 
 class AdminController {
     static registrarPersonal(req, res) {
@@ -131,25 +132,39 @@ class AdminController {
 
     static agregarEspecialidad(req, res) {
         // 1. Extraemos TODOS los datos (¡incluyendo doctoresAsignados!)
-        const { creadorRol, nombre, codigo, ubicacion, horario, descripcion, doctoresAsignados } = req.body;
+        const { creadorRol, nombre, ubicacion, horario, descripcion, doctoresAsignados } = req.body;
+
+        console.log('[AdminController] agregarEspecialidad body:', req.body);
 
         if (creadorRol !== 'Administrador') {
             return res.status(403).json({ error: 'Acceso denegado. Solo administradores pueden configurar especialidades.' });
         }
 
+        // Normalizar doctoresAsignados: aceptar string o array desde el cliente
+        let asignados = [];
+        if (Array.isArray(doctoresAsignados)) {
+            asignados = doctoresAsignados.map(String).map(s => s.trim()).filter(s => s);
+        } else if (typeof doctoresAsignados === 'string' && doctoresAsignados.trim()) {
+            asignados = [doctoresAsignados.trim()];
+        }
+
         // 2. Instanciamos la clase Modelo
         const nuevaEspecialidad = new Especialidad(
             nombre ? store.sanitizar(nombre.trim()) : null,
-            codigo ? store.sanitizar(codigo.trim()) : null,
             ubicacion ? store.sanitizar(ubicacion.trim()) : null,
-            horario ? store.sanitizar(horario.trim()) : null,
+            horario ? store.sanitizar(String(horario).trim()) : null,
             descripcion ? store.sanitizar(descripcion.trim()) : null,
-            doctoresAsignados || []
+            asignados
         );
 
         // 3. Validación interna del objeto
         if (!nuevaEspecialidad.esValida()) {
-            return res.status(400).json({ error: 'Complete todos los campos de la especialidad.' });
+            // Preparar mensaje más específico
+            const faltantes = [];
+            if (!nuevaEspecialidad.nombre) faltantes.push('nombre');
+            if (!nuevaEspecialidad.ubicacion) faltantes.push('ubicación');
+            if (!nuevaEspecialidad.descripcion) faltantes.push('descripción');
+            return res.status(400).json({ error: `Campos obligatorios faltantes: ${faltantes.join(', ')}.` });
         }
 
         const especialidades = store.leerEspecialidades();
@@ -163,13 +178,15 @@ class AdminController {
         }
 
         // 5. Guardar
-        especialidades[nuevaEspecialidad.nombre] = {
-            codigo: nuevaEspecialidad.codigo,
+        const registro = {
             ubicacion: nuevaEspecialidad.ubicacion,
-            horario: nuevaEspecialidad.horario,
             descripcion: nuevaEspecialidad.descripcion,
             doctoresAsignados: nuevaEspecialidad.doctoresAsignados
         };
+        // Solo incluir horario si existe y no es null/empty
+        if (nuevaEspecialidad.horario) registro.horario = nuevaEspecialidad.horario;
+
+        especialidades[nuevaEspecialidad.nombre] = registro;
 
         store.guardarEspecialidades(especialidades);
 
@@ -238,6 +255,22 @@ class AdminController {
                 fotoUrl: `https://ui-avatars.com/api/?name=${admin.nombre}+${admin.apellido}&background=0056b3&color=fff`
             }
         });
+    }
+
+    static listarCitas(req, res) {
+        const { adminId } = req.query;
+        if (!adminId) {
+            return res.status(400).json({ error: 'Debe indicar el adminId.' });
+        }
+
+        const admins = store.leerAdmins();
+        const esAdmin = admins.some(a => String(a.id) === String(adminId));
+        if (!esAdmin) {
+            return res.status(403).json({ error: 'Acceso denegado. Solo administradores autorizados.' });
+        }
+
+        const citas = citaStore.leerCitas().map(citaStore.normalizarEstado);
+        return res.json(citas);
     }
 }
 

@@ -1,0 +1,24 @@
+[
+  {
+    "nombre": "Luis",
+    "apellido": "Alfaro",
+    "motivo": "HOLA",
+    "doctor": "Dr/a. jose jose",
+    "fecha": "2026-06-04",
+    "hora": "11:00",
+    "pacienteId": "99999999",
+    "id": 1780110471862,
+    "estado": "pendiente"
+  },
+  {
+    "nombre": "Marcello",
+    "apellido": "Fasano",
+    "motivo": "dsgsdg",
+    "doctor": "Dr/a. Juan Pérez",
+    "fecha": "2026-06-04",
+    "hora": "11:00",
+    "pacienteId": "31946269",
+    "id": 1780111599007,
+    "estado": "pendiente"
+  }
+]

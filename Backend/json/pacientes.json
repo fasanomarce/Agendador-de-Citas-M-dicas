@@ -22,5 +22,17 @@
     "biografia": "",
     "rol": "Paciente",
     "cita": null
+  },
+  {
+    "correo": "mfasano954@gmail.com",
+    "contrasena": "TWFyY2VsbG8yODA1MDcu",
+    "id": "31946269",
+    "nombre": "Marcello",
+    "apellido": "Fasano",
+    "telefono": "",
+    "fotoUrl": "https://ui-avatars.com/api/?name=Marcello+Fasano&background=28a745&color=fff",
+    "biografia": "",
+    "rol": "Paciente",
+    "cita": null
   }
 ]

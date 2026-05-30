@@ -5,12 +5,23 @@ const Secretario = require('../Model/Secretario');
 
 class EspecialidadController {
 
+    static obtenerTodas(req, res) {
+        const especialidadesRuta = path.join(__dirname, '../json/especialidades.json');
+        try {
+            const especialidadesSintaxis = fs.readFileSync(especialidadesRuta, 'utf-8');
+            const especialidadesJson = JSON.parse(especialidadesSintaxis);
+            res.json(especialidadesJson);
+        } catch (e) {
+            res.status(500).json({ error: "Error al leer especialidades." });
+        }
+    }
+
     static obtenerDetalles(req, res) {
         const nombreEspecialidad = req.params.nombre;
 
         // Leer datos de JSONs
-        const personalRuta = path.join(__dirname, '../personal.json');
-        const especialidadesRuta = path.join(__dirname, '../especialidades.json');
+        const personalRuta = path.join(__dirname, '../json/personal.json');
+        const especialidadesRuta = path.join(__dirname, '../json/especialidades.json');
 
         const personalSintaxis = fs.readFileSync(personalRuta, 'utf-8');
         const especialidadesSintaxis = fs.readFileSync(especialidadesRuta, 'utf-8');

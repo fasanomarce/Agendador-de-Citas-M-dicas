@@ -80,6 +80,8 @@ class PerfilView {
                 <li class="nav__item"><a href="PerfilEspecialista.html" class="nav__link">Mis Citas</a></li>
                 <li class="nav__item"><a href="Perfil.html" class="nav__link" ${activo}>Mi Perfil</a></li>`,
             Administrador: `
+                <li class="nav__item"><a href="MenuCitas.html" class="nav__link">Menú Principal</a></li>
+                <li class="nav__item"><a href="ConsultarCitas.html" class="nav__link">Consultar Citas</a></li>
                 <li class="nav__item"><a href="PerfilAdmin.html" class="nav__link">Administración</a></li>
                 <li class="nav__item"><a href="Perfil.html" class="nav__link" ${activo}>Mi Perfil</a></li>`
         };
@@ -241,8 +243,15 @@ class PerfilView {
     mostrarToast(mensaje, esError = false) {
         this.toast.innerText = mensaje;
         this.toast.className = esError ? 'toast-notificacion error' : 'toast-notificacion';
-        this.toast.style.display = 'flex';
-        setTimeout(() => { this.toast.style.display = 'none'; }, 5000);
+        const displayType = 'flex';
+        this.toast.style.display = displayType;
+        this.toast.style.opacity = '1';
+        this.toast.style.transition = 'opacity 0.5s ease';
+
+        if (this.toast._hideTimeout) clearTimeout(this.toast._hideTimeout);
+        if (this.toast._removeTimeout) clearTimeout(this.toast._removeTimeout);
+
+        this.toast._hideTimeout = setTimeout(() => { this.toast.style.opacity = '0'; this.toast._removeTimeout = setTimeout(() => { this.toast.style.display = 'none'; }, 600); }, 3000);
     }
 
     handleSubmit(e) {

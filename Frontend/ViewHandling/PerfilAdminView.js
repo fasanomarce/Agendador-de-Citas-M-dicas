@@ -47,10 +47,38 @@ class PerfilAdminView {
     }
 
     mostrarToast(msg, error = false) {
+        try {
+            console.log('[PerfilAdminView] mostrarToast:', msg, 'error=', error);
+        } catch (e) {}
+
         this.toast.innerText = msg;
         this.toast.className = error ? 'toast-notificacion error' : 'toast-notificacion';
-        this.toast.style.display = 'block';
-        setTimeout(() => { this.toast.style.display = 'none'; }, 5000);
+
+        // Ensure any inline display:none is removed so visibility via opacity works
+        this.toast.style.removeProperty('display');
+        const displayType = 'block';
+        this.toast.style.display = displayType;
+        // Force reflow to ensure transition applies
+        // eslint-disable-next-line no-unused-expressions
+        void this.toast.offsetWidth;
+
+        this.toast.style.transition = 'opacity 0.5s ease';
+        this.toast.style.opacity = '1';
+
+        // clear previous timers
+        if (this.toast._hideTimeout) clearTimeout(this.toast._hideTimeout);
+        if (this.toast._removeTimeout) clearTimeout(this.toast._removeTimeout);
+
+        // remember the current message so a stale timer doesn't hide a new one
+        this.toast._lastMsg = msg;
+
+        this.toast._hideTimeout = setTimeout(() => {
+            // only hide if message hasn't changed
+            if (this.toast._lastMsg === msg) {
+                this.toast.style.opacity = '0';
+                this.toast._removeTimeout = setTimeout(() => { this.toast.style.display = 'none'; }, 600);
+            }
+        }, 3000);
     }
 
     registrarPersonal(e) {
@@ -109,32 +137,60 @@ class PerfilAdminView {
     registrarEspecialidad(e) {
         e.preventDefault();
         const selectedDoctor = document.getElementById('espDoctorAsignado').value.trim();
+        const nombre = document.getElementById('espNombre').value.trim();
+        const ubicacion = document.getElementById('espUbicacion').value.trim();
+        const descripcion = document.getElementById('espDescripcion').value.trim();
+
+        // Debug: mostrar valores recopilados antes de validar
+        console.log('[PerfilAdminView] valores formulario especialidad:', {
+            nombre, ubicacion, descripcion, selectedDoctor
+        });
+
+        // Validación en cliente para evitar peticiones innecesarias
+        if (!nombre || !ubicacion || !descripcion) {
+            this.mostrarToast('Complete todos los campos de la especialidad.', true);
+            return;
+        }
+        if (!selectedDoctor) {
+            this.mostrarToast('Seleccione al menos un doctor asignado.', true);
+            return;
+        }
+
         const payload = {
             creadorRol: 'Administrador',
-            nombre: document.getElementById('espNombre').value.trim(),
-            codigo: document.getElementById('espCodigo').value.trim(),
-            ubicacion: document.getElementById('espUbicacion').value.trim(),
-            horario: document.getElementById('espHorario').value.trim(),
-            descripcion: document.getElementById('espDescripcion').value.trim(),
-            doctoresAsignados: selectedDoctor ? [selectedDoctor] : []
+            nombre,
+            ubicacion,
+            descripcion,
+            doctoresAsignados: [selectedDoctor]
         };
+
+        console.log('Enviando payload especialidad:', payload);
 
         fetch(`${API_BASE}/admin/especialidades`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         })
-            .then(res => res.json().then(b => ({ status: res.status, body: b })))
+            .then(async res => {
+                let body = null;
+                try { body = await res.json(); } catch(e) { /* ignore parse errors */ }
+                console.log('Respuesta /admin/especialidades', res.status, body);
+                return { status: res.status, body };
+            })
             .then(r => {
                 if (r.status === 201) {
-                    this.mostrarToast(r.body.mensaje);
+                    this.mostrarToast(r.body.mensaje || 'Especialidad registrada con éxito');
                     this.especialidadForm.reset();
                     this.cargarEspecialidadesEnSelects();
                 } else {
-                    this.mostrarToast(r.body.error || 'Error.', true);
+                    const msg = r.body && (r.body.error || r.body.mensaje) ? (r.body.error || r.body.mensaje) : 'Error.';
+                    this.mostrarToast(msg, true);
                 }
             })
-            .catch(() => this.mostrarToast('Error de conexión.', true));
+            .catch((err) => {
+                console.error('Error petición especialidades:', err);
+                this.mostrarToast('Error de conexión.', true);
+            });
     }
 
     cerrarSesion() {

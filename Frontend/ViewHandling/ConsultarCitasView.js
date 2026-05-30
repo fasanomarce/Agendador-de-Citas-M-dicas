@@ -18,12 +18,14 @@ class ConsultarCitasView {
             this.usuarioActivo = JSON.parse(sesion);
             const rol = obtenerRolCanonico(this.usuarioActivo);
 
-            if (rol !== 'Paciente' && rol !== 'Secretario') {
+            // Permitir acceso a Paciente, Secretario y Administrador
+            if (rol !== 'Paciente' && rol !== 'Secretario' && rol !== 'Administrador') {
                 window.location.href = destinoInicioSesion(this.usuarioActivo);
                 return;
             }
 
-            this.esSecretario = rol === 'Secretario';
+            // Tratamos a Administrador igual que Secretario en esta vista (ve todas las citas)
+            this.esSecretario = (rol === 'Secretario' || rol === 'Administrador');
             this.configurarVista();
             this.solicitarCitasAlServidor();
         });
@@ -33,8 +35,9 @@ class ConsultarCitasView {
         const titulo = document.getElementById('tituloConsulta');
         const subtitulo = document.getElementById('subtituloConsulta');
         const nav = document.getElementById('mainNav')?.querySelector('.nav__list');
+        const rol = obtenerRolCanonico(this.usuarioActivo);
 
-        if (this.esSecretario) {
+        if (rol === 'Secretario') {
             if (titulo) titulo.innerText = 'Todas las Citas del Sistema';
             if (subtitulo) subtitulo.innerText = 'Vista operativa: consulte el detalle de todas las citas registradas.';
             if (nav) {
@@ -43,7 +46,18 @@ class ConsultarCitasView {
                     <li class="nav__item"><a href="Perfil.html" class="nav__link">Mi Perfil</a></li>
                     <li class="nav__item"><a href="ConsultarCitas.html" class="nav__link" style="background:rgba(255,255,255,0.3)">Consultar Citas</a></li>`;
             }
+        } else if (rol === 'Administrador') {
+            if (titulo) titulo.innerText = 'Todas las Citas del Sistema';
+            if (subtitulo) subtitulo.innerText = 'Vista operativa: consulte el detalle de todas las citas registradas.';
+            if (nav) {
+                nav.innerHTML = `
+                    <li class="nav__item"><a href="MenuCitas.html" class="nav__link">Menú Principal</a></li>
+                    <li class="nav__item"><a href="ConsultarCitas.html" class="nav__link" style="background:rgba(255,255,255,0.3)">Consultar Citas</a></li>
+                    <li class="nav__item"><a href="PerfilAdmin.html" class="nav__link">Administración</a></li>
+                    <li class="nav__item"><a href="Perfil.html" class="nav__link">Mi Perfil</a></li>`;
+            }
         } else if (nav) {
+            // Paciente u otros roles permitidos
             nav.innerHTML = `
                 <li class="nav__item"><a href="MenuCitas.html" class="nav__link">Menú Principal</a></li>
                 <li class="nav__item"><a href="Perfil.html" class="nav__link">Mi Perfil</a></li>
@@ -52,9 +66,15 @@ class ConsultarCitasView {
     }
 
     solicitarCitasAlServidor() {
-        const url = this.esSecretario
-            ? `${API_BASE}/secretario/citas?secretarioId=${encodeURIComponent(this.usuarioActivo.id)}`
-            : `${API_BASE}/pacientes/${encodeURIComponent(this.usuarioActivo.id)}/citas`;
+        const rol = obtenerRolCanonico(this.usuarioActivo);
+        let url;
+        if (rol === 'Administrador') {
+            url = `${API_BASE}/admin/citas?adminId=${encodeURIComponent(this.usuarioActivo.id)}`;
+        } else if (this.esSecretario) {
+            url = `${API_BASE}/secretario/citas?secretarioId=${encodeURIComponent(this.usuarioActivo.id)}`;
+        } else {
+            url = `${API_BASE}/pacientes/${encodeURIComponent(this.usuarioActivo.id)}/citas`;
+        }
 
         fetch(url)
             .then(respuesta => {

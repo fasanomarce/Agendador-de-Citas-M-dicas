@@ -12,7 +12,8 @@
             window.location.href = 'login.html';
         } else {
             const u = JSON.parse(sesionMenu);
-            if (u.rol !== 'Paciente') {
+            // Si no es Paciente ni Administrador, lo redirigimos a su panel
+            if (u.rol !== 'Paciente' && u.rol !== 'Administrador') {
                 window.location.href = destinoInicioSesion(u);
             }
         }
@@ -28,6 +29,14 @@
             <ul class="nav__list">
                 <li class="nav__item"><a href="MenuCitas.html" class="nav__link">Menú Principal</a></li>
                 <li class="nav__item"><a href="ConsultarCitas.html" class="nav__link">Consultar Citas</a></li>
+                <script>
+                    if (sesionMenu) {
+                        const usuario = JSON.parse(sesionMenu);
+                        if (usuario.rol === 'Administrador') {
+                            document.write('<li class="nav__item"><a href="PerfilAdmin.html" class="nav__link">Administración</a></li>');
+                        }
+                    }
+                </script>
                 <li class="nav__item"><a href="Perfil.html" class="nav__link">Mi Perfil</a></li>
             </ul>
         </nav>
@@ -39,78 +48,8 @@
             <hr class="dashboard-divider">
         </div>
 
-        <div class="dashboard-grid">
-            
-            <!-- Especialidad 1 -->
-            <div class="dashboard-card">
-                <a href="#" class="card-link-wrapper" onclick="menuCitasView.abrirModal('Cardiología')">
-                    <div class="card-top" style="background-color: #2F4F4F;">
-                        <div class="card-menu-icon">⋮</div>
-                    </div>
-                    <div class="card-body">
-                        <h3 class="card-title" style="color: #2F4F4F;">Cardiología</h3>
-                        <p class="card-subtext">Consultorio 101 - Lunes a Viernes</p>
-                    </div>
-                </a>
-
-            </div>
-
-            <!-- Especialidad 2 -->
-            <div class="dashboard-card">
-                <a href="#" class="card-link-wrapper" onclick="menuCitasView.abrirModal('Pediatría')">
-                    <div class="card-top" style="background-color: #B22222;">
-                        <div class="card-menu-icon">⋮</div>
-                    </div>
-                    <div class="card-body">
-                        <h3 class="card-title" style="color: #B22222;">Pediatría</h3>
-                        <p class="card-subtext">Consultorio 204 - Lunes a Sábado</p>
-                    </div>
-                </a>
-
-            </div>
-
-            <!-- Especialidad 3 -->
-            <div class="dashboard-card">
-                <a href="#" class="card-link-wrapper" onclick="menuCitasView.abrirModal('Dermatología')">
-                    <div class="card-top" style="background-color: #008000;">
-                        <div class="card-menu-icon">⋮</div>
-                    </div>
-                    <div class="card-body">
-                        <h3 class="card-title" style="color: #008000;">Dermatología</h3>
-                        <p class="card-subtext">Consultorio 305 - Martes a Viernes</p>
-                    </div>
-                </a>
-
-            </div>
-
-            <!-- Especialidad 4 -->
-            <div class="dashboard-card">
-                <a href="#" class="card-link-wrapper" onclick="menuCitasView.abrirModal('Odontología')">
-                    <div class="card-top" style="background-color: #4682B4;">
-                        <div class="card-menu-icon">⋮</div>
-                    </div>
-                    <div class="card-body">
-                        <h3 class="card-title" style="color: #4682B4;">Odontología</h3>
-                        <p class="card-subtext">Consultorio 102 - Lunes a Viernes</p>
-                    </div>
-                </a>
-
-            </div>
-
-            <!-- Especialidad 5 -->
-            <div class="dashboard-card">
-                <a href="#" class="card-link-wrapper" onclick="menuCitasView.abrirModal('Neurología')">
-                    <div class="card-top" style="background-color: #696969;">
-                        <div class="card-menu-icon">⋮</div>
-                    </div>
-                    <div class="card-body">
-                        <h3 class="card-title" style="color: #696969;">Neurología</h3>
-                        <p class="card-subtext">Consultorio 401 - Miércoles a Viernes</p>
-                    </div>
-                </a>
-
-            </div>
-            
+        <div class="dashboard-grid" id="contenedorMenuEspecialidades">
+            <!-- Las especialidades se cargarán dinámicamente aquí -->
         </div>
     </main>
 
@@ -124,13 +63,6 @@
                 <div class="modal-notion-left">
                     <h1 id="modalTitulo" class="notion-title">Oftalmología</h1>
                     
-                    <div class="notion-properties">
-                        <div class="prop-row">
-                            <span class="prop-icon">🕒</span>
-                            <span class="prop-label">Horario</span>
-                            <span class="prop-value" id="modalHorario">...</span>
-                        </div>
-                    </div>
                     
                     <hr class="notion-divider">
 

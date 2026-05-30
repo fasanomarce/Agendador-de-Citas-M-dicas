@@ -28,6 +28,8 @@
         <h1 class="header_logo">Agendador de Citas</h1>
         <nav class="nav">
             <ul class="nav__list">
+                <li class="nav__item"><a href="MenuCitas.html" class="nav__link">Menú Principal</a></li>
+                <li class="nav__item"><a href="ConsultarCitas.html" class="nav__link">Consultar Citas</a></li>
                 <li class="nav__item"><a href="PerfilAdmin.html" class="nav__link" style="background:rgba(255,255,255,0.3)">Administración</a></li>
                 <li class="nav__item"><a href="Perfil.html" class="nav__link">Mi Perfil</a></li>
             </ul>
@@ -36,7 +38,7 @@
 
     <main class="admin-container">
         <div class="admin-panel">
-            <h2>Panel de Administración: Alta de Personal</h2>
+            <h2>Panel de Administración</h2>
             <p>Registre doctores, secretarios, administradores o pacientes en el sistema.</p>
             <form id="adminRegForm" novalidate>
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px">
@@ -91,7 +93,7 @@
                         <input type="text" id="adminRolAdmin" placeholder="Recepción Dpto.">
                     </div>
                 </div>
-                <button type="submit" id="btnAdminRegistrar" style="margin-top:20px">Dar de Alta Personal</button>
+                <button type="submit" id="btnAdminRegistrar" style="margin-top:20px">Registrar Personal</button>
             </form>
         </div>
 
@@ -100,15 +102,13 @@
             <form id="especialidadForm" novalidate>
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px">
                     <div class="input-group"><label>Nombre*</label><input type="text" id="espNombre" required></div>
-                    <div class="input-group"><label>Código*</label><input type="text" id="espCodigo" required></div>
                     <div class="input-group"><label>Ubicación*</label><input type="text" id="espUbicacion" required></div>
-                    <div class="input-group"><label>Horario*</label><input type="text" id="espHorario" required></div>
-                </div>
-                <div class="input-group">
-                    <label for="espDoctorAsignado">Doctor Asignado (Requerido)*</label>
-                    <select id="espDoctorAsignado" required>
-                        <option value="">Cargando doctores...</option>
-                    </select>
+                    <div class="input-group">
+                        <label for="espDoctorAsignado">Doctor Asignado (Requerido)*</label>
+                        <select id="espDoctorAsignado" required>
+                            <option value="">Cargando doctores...</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="input-group">
                     <label>Descripción*</label>

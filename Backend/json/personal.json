@@ -92,6 +92,17 @@
       "areaAsignada": "Neurología",
       "rol": "Recepción y Archivos",
       "color": "4682B4"
+    },
+    {
+      "id": 14141178,
+      "nombre": "Angelo",
+      "apellido": "Fasano",
+      "correo": "bfasano2@gmail.com",
+      "contrasena": "Caripe-141",
+      "areaAsignada": "Odontología",
+      "rol": "Recepción",
+      "color": "4682B4",
+      "fotoUrl": "https://ui-avatars.com/api/?name=Angelo+Fasano&background=4682B4&color=fff"
     }
   ]
 }

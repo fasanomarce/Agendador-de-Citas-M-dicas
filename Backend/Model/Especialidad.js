@@ -1,7 +1,6 @@
 class Especialidad {
-    constructor(nombre, codigo, ubicacion, horario, descripcion, doctoresAsignados = []) {
+    constructor(nombre, ubicacion, horario, descripcion, doctoresAsignados = []) {
         this.nombre = nombre;
-        this.codigo = codigo;
         this.ubicacion = ubicacion;
         this.horario = horario;
         this.descripcion = descripcion;
@@ -9,7 +8,8 @@ class Especialidad {
     }
 
     esValida() {
-        return this.nombre && this.codigo && this.ubicacion && this.horario && this.descripcion;
+        // El campo 'horario' ahora es opcional en la creación de especialidades
+        return this.nombre && this.ubicacion && this.descripcion;
     }
 }
 

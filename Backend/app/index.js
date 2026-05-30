@@ -2,11 +2,11 @@ const express = require('express');
 const cors = require('cors');
 const citaController = require('../Controller/CitaController');
 const especialidadController = require('../Controller/EspecialidadController');
-const authController = require('../controllers/AuthController');
-const pacienteController = require('../controllers/PacienteController');
-const especialistaController = require('../controllers/EspecialistaController');
-const secretarioController = require('../controllers/SecretarioController');
-const adminController = require('../controllers/AdminController');
+const authController = require('../Controller/AuthController');
+const pacienteController = require('../Controller/PacienteController');
+const especialistaController = require('../Controller/EspecialistaController');
+const secretarioController = require('../Controller/SecretarioController');
+const adminController = require('../Controller/AdminController');
 
 const app = express();
 app.use(cors());
@@ -17,6 +17,7 @@ app.post('/api/citas', citaController.guardarCita);
 app.get('/api/citas', citaController.cargarCitas);
 
 // Especialidades (menú público)
+app.get('/api/especialidades', especialidadController.obtenerTodas);
 app.get('/api/especialidades/:nombre', especialidadController.obtenerDetalles);
 
 // Autenticación
@@ -52,6 +53,7 @@ app.post('/api/admin/personal', adminController.registrarPersonal);
 app.get('/api/admin/especialidades', adminController.listarEspecialidades);
 app.get('/api/admin/doctores', adminController.listarDoctores);
 app.post('/api/admin/especialidades', adminController.agregarEspecialidad);
+app.get('/api/admin/citas', adminController.listarCitas);
 
 // Compatibilidad temporal con rutas anteriores
 app.post('/api/usuarios/registro', authController.registro);

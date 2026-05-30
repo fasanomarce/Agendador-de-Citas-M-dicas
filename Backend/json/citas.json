@@ -22,5 +22,18 @@
     "pacienteId": "31946269",
     "id": 1780143780857,
     "estado": "pendiente"
+  },
+  {
+    "nombre": "john",
+    "apellido": "quest",
+    "motivo": "Infarto",
+    "doctor": "Dr/a. Juan Pérez",
+    "fecha": "2026-06-01",
+    "hora": "09:00",
+    "especialidad": "Cardiología",
+    "especialistaId": 1,
+    "pacienteId": "88888888",
+    "id": 1780145148736,
+    "estado": "pendiente"
   }
 ]

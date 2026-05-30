@@ -4,6 +4,19 @@ class CitaView {
     constructor() {
         this.especialidad = null;
         this.doctoresPermitidos = [];
+        this.horariosEspecialista = [];
+        this.especialistaIdSeleccionado = null;
+
+        this.nombresDiaSemana = [
+            'domingo',
+            'lunes',
+            'martes',
+            'miercoles',
+            'jueves',
+            'viernes',
+            'sabado'
+        ];
+
         this.init();
     }
 
@@ -18,12 +31,22 @@ class CitaView {
                 return;
             }
 
+            this.inicializarSelectHoras();
             this.mostrarAreaSeleccionada();
             this.configurarFecha();
             this.asignarEventos();
             this.cargarEspecialistasDelArea();
             this.prellenarUsuarioSesion();
         });
+    }
+
+    inicializarSelectHoras() {
+        const selectHora = document.getElementById('hora');
+        if (!selectHora) return;
+
+        selectHora.innerHTML = '<option value="">Seleccione un especialista primero...</option>';
+        selectHora.disabled = true;
+        selectHora.required = false;
     }
 
     mostrarAreaSeleccionada() {
@@ -99,11 +122,45 @@ class CitaView {
         const btnContinuar2 = document.getElementById('btnContinuar2');
         const btnSalir = document.getElementById('btnSalir');
         const form = document.getElementById('registroCitaForm');
+        const selectDoctor = document.getElementById('doctor');
 
         if (btnContinuar1) btnContinuar1.addEventListener('click', () => this.irAlPaso(2));
         if (btnContinuar2) btnContinuar2.addEventListener('click', () => this.irAlPaso(3));
         if (btnSalir) btnSalir.addEventListener('click', () => this.cancelarProceso());
         if (form) form.addEventListener('submit', this.guardarReservacion.bind(this));
+
+        if (selectDoctor) {
+            selectDoctor.addEventListener('change', () => this.onEspecialistaChange());
+        }
+    }
+
+    onEspecialistaChange() {
+        const selectDoctor = document.getElementById('doctor');
+        const especialistaId = selectDoctor ? selectDoctor.value : '';
+
+        this.horariosEspecialista = [];
+        this.especialistaIdSeleccionado = especialistaId || null;
+
+        if (!especialistaId) {
+            this.inicializarSelectHoras();
+            this.ocultarMensajeDisponibilidad();
+            return;
+        }
+
+        fetch(`${API_BASE}/horarios/${especialistaId}`)
+            .then(res => {
+                if (!res.ok) throw new Error('No se pudieron obtener los horarios del especialista');
+                return res.json();
+            })
+            .then(horarios => {
+                this.horariosEspecialista = Array.isArray(horarios) ? horarios : [];
+                this.actualizarSelectHoras();
+            })
+            .catch(err => {
+                console.error('[CitaView] Error al cargar horarios:', err);
+                this.horariosEspecialista = [];
+                this.mostrarSinDisponibilidad('No se pudieron cargar los horarios del especialista.');
+            });
     }
 
     configurarFecha() {
@@ -119,13 +176,149 @@ class CitaView {
         inputFecha.min = `${anio}-${mes}-${dia}`;
 
         inputFecha.addEventListener('change', (e) => {
-            const fechaElegida = new Date(e.target.value);
-            const diaSemana = fechaElegida.getUTCDay();
+            const valorFecha = e.target.value;
+            if (!valorFecha) {
+                this.actualizarSelectHoras();
+                return;
+            }
+
+            const fechaElegida = new Date(`${valorFecha}T12:00:00`);
+            const diaSemana = fechaElegida.getDay();
+
             if (diaSemana === 0 || diaSemana === 6) {
                 alert('Lo sentimos, no atendemos los fines de semana. Por favor elija de lunes a viernes.');
                 e.target.value = '';
+                this.actualizarSelectHoras();
+                return;
             }
+
+            this.actualizarSelectHoras();
         });
+    }
+
+    convertirHoraAMinutos(hora) {
+        if (!hora || typeof hora !== 'string') return NaN;
+        const partes = hora.split(':');
+        if (partes.length < 2) return NaN;
+        const horas = Number(partes[0]);
+        const minutos = Number(partes[1]);
+        if (Number.isNaN(horas) || Number.isNaN(minutos)) return NaN;
+        return horas * 60 + minutos;
+    }
+
+    minutosAHora(minutos) {
+        if (typeof minutos !== 'number' || Number.isNaN(minutos)) return '';
+        const horas = Math.floor(minutos / 60);
+        const mins = minutos % 60;
+        return `${String(horas).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
+    }
+
+    obtenerMinutosDesdeBloque(bloque, extremo) {
+        if (extremo === 'inicio') {
+            if (typeof bloque.inicioMinutos === 'number') return bloque.inicioMinutos;
+            return this.convertirHoraAMinutos(bloque.horaInicio);
+        }
+        if (typeof bloque.finMinutos === 'number') return bloque.finMinutos;
+        return this.convertirHoraAMinutos(bloque.horaFin);
+    }
+
+    obtenerDiaSemanaDesdeFecha(fechaStr) {
+        if (!fechaStr) return '';
+        const fecha = new Date(`${fechaStr}T12:00:00`);
+        return this.nombresDiaSemana[fecha.getDay()] || '';
+    }
+
+    formatearEtiquetaBloque(bloque) {
+        const inicioMin = this.obtenerMinutosDesdeBloque(bloque, 'inicio');
+        const finMin = this.obtenerMinutosDesdeBloque(bloque, 'fin');
+
+        const horaInicio = bloque.horaInicio || this.minutosAHora(inicioMin);
+        const horaFin = bloque.horaFin || this.minutosAHora(finMin);
+
+        return `${horaInicio} – ${horaFin}`;
+    }
+
+    obtenerBloquesParaFecha(fechaStr) {
+        const diaSemana = this.obtenerDiaSemanaDesdeFecha(fechaStr);
+        if (!diaSemana) return [];
+
+        return this.horariosEspecialista
+            .filter(bloque => (bloque.diaSemana || '').toLowerCase() === diaSemana)
+            .sort((a, b) => {
+                const inicioA = this.obtenerMinutosDesdeBloque(a, 'inicio');
+                const inicioB = this.obtenerMinutosDesdeBloque(b, 'inicio');
+                return inicioA - inicioB;
+            });
+    }
+
+    mostrarMensajeDisponibilidad(texto) {
+        const mensaje = document.getElementById('mensajeDisponibilidadHoraria');
+        if (!mensaje) return;
+        mensaje.textContent = texto;
+        mensaje.style.display = 'block';
+    }
+
+    ocultarMensajeDisponibilidad() {
+        const mensaje = document.getElementById('mensajeDisponibilidadHoraria');
+        if (!mensaje) return;
+        mensaje.textContent = '';
+        mensaje.style.display = 'none';
+    }
+
+    mostrarSinDisponibilidad(texto) {
+        const selectHora = document.getElementById('hora');
+        if (!selectHora) return;
+
+        selectHora.innerHTML = `<option value="">${texto}</option>`;
+        selectHora.disabled = true;
+        selectHora.required = false;
+        selectHora.value = '';
+        this.mostrarMensajeDisponibilidad(texto);
+    }
+
+    actualizarSelectHoras() {
+        const selectHora = document.getElementById('hora');
+        const inputFecha = document.getElementById('fecha');
+        if (!selectHora) return;
+
+        this.ocultarMensajeDisponibilidad();
+
+        if (!this.especialistaIdSeleccionado) {
+            this.inicializarSelectHoras();
+            return;
+        }
+
+        const fechaSeleccionada = inputFecha ? inputFecha.value : '';
+        if (!fechaSeleccionada) {
+            selectHora.innerHTML = '<option value="">Seleccione una fecha primero...</option>';
+            selectHora.disabled = true;
+            selectHora.required = false;
+            selectHora.value = '';
+            return;
+        }
+
+        const bloquesDelDia = this.obtenerBloquesParaFecha(fechaSeleccionada);
+
+        if (bloquesDelDia.length === 0) {
+            this.mostrarSinDisponibilidad('No hay disponibilidad para este día.');
+            return;
+        }
+
+        selectHora.innerHTML = '<option value="">Seleccione un horario...</option>';
+
+        bloquesDelDia.forEach(bloque => {
+            const inicioMin = this.obtenerMinutosDesdeBloque(bloque, 'inicio');
+            const horaInicio = bloque.horaInicio || this.minutosAHora(inicioMin);
+            const etiqueta = this.formatearEtiquetaBloque(bloque);
+
+            const opcion = document.createElement('option');
+            opcion.value = horaInicio;
+            opcion.textContent = etiqueta;
+            selectHora.appendChild(opcion);
+        });
+
+        selectHora.disabled = false;
+        selectHora.required = true;
     }
 
     validarEspecialistaSeleccionado() {
@@ -169,6 +362,7 @@ class CitaView {
 
             document.getElementById('paso3').classList.add('activo');
             document.getElementById('btnContinuar2').style.display = 'none';
+            this.actualizarSelectHoras();
         }
     }
 
@@ -184,13 +378,19 @@ class CitaView {
         const doc = this.validarEspecialistaSeleccionado();
         if (!doc) return;
 
+        const selectHora = document.getElementById('hora');
+        if (!selectHora || !selectHora.value || selectHora.disabled) {
+            alert('Seleccione un horario disponible para la fecha elegida.');
+            return;
+        }
+
         const citaNueva = new Cita(
             document.getElementById('nombre').value,
             document.getElementById('apellido').value,
             document.getElementById('motivo').value,
             doc.etiqueta,
             document.getElementById('fecha').value,
-            document.getElementById('hora').value
+            selectHora.value
         );
 
         citaNueva.especialidad = this.especialidad;

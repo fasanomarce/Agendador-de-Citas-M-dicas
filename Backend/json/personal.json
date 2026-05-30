@@ -71,6 +71,17 @@
       "rol": "Titulo",
       "color": "2F4F4F",
       "fotoUrl": "https://ui-avatars.com/api/?name=FFFFFFF+AAAAAAA&background=2F4F4F&color=fff"
+    },
+    {
+      "id": 31799899,
+      "nombre": "Bianchelo",
+      "apellido": "Fiorelli",
+      "correo": "fiore@gmail.com",
+      "contrasena": "Z3VhY2FsYQ==",
+      "especialidad": "Cardiología",
+      "rol": "Medico Titular",
+      "color": "2F4F4F",
+      "fotoUrl": "https://ui-avatars.com/api/?name=Bianchelo+Fiorelli&background=2F4F4F&color=fff"
     }
   ],
   "secretarios": [

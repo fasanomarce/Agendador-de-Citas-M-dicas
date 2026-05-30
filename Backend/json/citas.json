@@ -13,12 +13,14 @@
   {
     "nombre": "Marcello",
     "apellido": "Fasano",
-    "motivo": "dsgsdg",
-    "doctor": "Dr/a. Juan Pérez",
-    "fecha": "2026-06-04",
-    "hora": "11:00",
+    "motivo": "Dolor estomacal",
+    "doctor": "Dr/a. María Gómez",
+    "fecha": "2026-06-11",
+    "hora": "14:00",
+    "especialidad": "Pediatría",
+    "especialistaId": 2,
     "pacienteId": "31946269",
-    "id": 1780111599007,
+    "id": 1780143780857,
     "estado": "pendiente"
   }
 ]

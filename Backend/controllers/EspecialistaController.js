@@ -1,5 +1,6 @@
 const store = require('../utils/usuarioStore');
 const citaStore = require('../utils/citaStore');
+const notificacionStore = require('../utils/NotificacionStore');
 
 class EspecialistaController {
     static _buscarEspecialista(id) {
@@ -78,6 +79,42 @@ class EspecialistaController {
             mensaje: 'Cita marcada como completada.',
             cita: citas[indice]
         });
+    }
+
+    static listarNotificacionesHorario(req, res) {
+        const { especialistaId } = req.query;
+        if (!especialistaId) {
+            return res.status(400).json({ error: 'Debe indicar el especialistaId.' });
+        }
+
+        const esp = EspecialistaController._buscarEspecialista(especialistaId);
+        if (!esp) {
+            return res.status(404).json({ error: 'Especialista no encontrado.' });
+        }
+
+        const notificaciones = notificacionStore.listarPorEspecialista(especialistaId);
+        return res.json(notificaciones);
+    }
+
+    static marcarNotificacionHorarioLeida(req, res) {
+        const { especialistaId } = req.body;
+        const notificacionId = Number(req.params.id);
+
+        if (!especialistaId) {
+            return res.status(400).json({ error: 'Debe indicar el especialistaId.' });
+        }
+
+        const esp = EspecialistaController._buscarEspecialista(especialistaId);
+        if (!esp) {
+            return res.status(404).json({ error: 'Especialista no encontrado.' });
+        }
+
+        const actualizada = notificacionStore.marcarComoLeida(notificacionId, especialistaId);
+        if (!actualizada) {
+            return res.status(404).json({ error: 'Notificación no encontrada.' });
+        }
+
+        return res.json({ mensaje: 'Notificación marcada como leída.', notificacion: actualizada });
     }
 
     static actualizarMiPerfil(req, res) {

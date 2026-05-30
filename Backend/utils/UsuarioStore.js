@@ -38,7 +38,7 @@ function normalizarCorreo(correo) {
 function contrasenaCoincide(ingresada, almacenada) {
     if (almacenada == null) return false;
     const cifrada = cifrarPassword(ingresada);
-    return almacenada === ingresada || almacenada === cifrada;
+    return almacenada === cifrada;
 }
 
 function guardarPersonal(personal) {

@@ -120,48 +120,6 @@ class SecretarioController {
         return res.json({ mensaje: 'Cita actualizada correctamente.', cita: citas[indice] });
     }
 
-    static listarBloques(req, res) {
-        return res.json(citaStore.leerBloques());
-    }
-
-    static asignarBloque(req, res) {
-        const { modificadoPor, rolModificadoPor, especialistaId, especialidad, fecha, horaInicio, horaFin } = req.body;
-
-        if (!modificadoPor || rolModificadoPor !== 'Secretario') {
-            return res.status(403).json({ error: 'Acceso denegado. Solo secretarios autorizados.' });
-        }
-
-        if (!especialistaId || !especialidad || !fecha || !horaInicio || !horaFin) {
-            return res.status(400).json({ error: 'Complete especialista, especialidad, fecha y rango horario.' });
-        }
-
-        const personal = store.leerPersonal();
-        const esp = personal.especialistas.find(e => String(e.id) === String(especialistaId));
-        if (!esp) {
-            return res.status(404).json({ error: 'Especialista no encontrado.' });
-        }
-
-        const bloques = citaStore.leerBloques();
-        const nuevoBloque = {
-            id: Date.now(),
-            especialistaId: Number(especialistaId),
-            especialistaNombre: `${esp.nombre} ${esp.apellido}`,
-            especialidad: store.sanitizar(especialidad.trim()),
-            fecha,
-            horaInicio,
-            horaFin,
-            creadoPor: modificadoPor
-        };
-
-        bloques.push(nuevoBloque);
-        citaStore.guardarBloques(bloques);
-
-        return res.status(201).json({
-            mensaje: 'Bloque horario asignado al médico.',
-            bloque: nuevoBloque
-        });
-    }
-
     static listarEspecialistas(req, res) {
         const personal = store.leerPersonal();
         const lista = personal.especialistas.map(e => ({

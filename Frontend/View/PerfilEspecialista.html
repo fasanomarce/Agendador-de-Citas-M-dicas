@@ -7,12 +7,23 @@
     <link rel="stylesheet" href="styles.css">
     <style>
         .esp-container { max-width: 900px; margin: 30px auto; padding: 0 20px; }
-        .esp-panel { background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
+        .esp-panel { background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); margin-bottom: 20px; }
         .cita-card { border: 1px solid #e1e8ed; padding: 18px; border-radius: 8px; margin-bottom: 15px; }
         .cita-card.completada { opacity: 0.75; border-color: #28a745; }
+        .notificacion-card { border-left: 4px solid #0056b3; background: #f8fbff; }
+        .notificacion-card.leida { border-left-color: #ccc; background: #fafafa; opacity: 0.85; }
+        .inbox-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+        .inbox-badge {
+            display: inline-flex; align-items: center; justify-content: center;
+            min-width: 28px; height: 28px; padding: 0 10px; border-radius: 999px;
+            background: #dc3545; color: #fff; font-size: 13px; font-weight: 700;
+        }
+        .inbox-badge.vacio { background: #6c757d; }
         .estado-pill { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
         .estado-pendiente { background: #fff3cd; color: #856404; }
         .estado-completada { background: #d4edda; color: #155724; }
+        .pill-nueva { background: #cce5ff; color: #004085; margin-bottom: 8px; }
+        .btn-leida { margin-top: 10px; background: #0056b3; color: #fff; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; }
         .toast-notificacion { position: fixed; top: 20px; right: 20px; background: #28a745; color: #fff; padding: 15px 25px; border-radius: 8px; display: none; z-index: 1100; }
         .toast-notificacion.error { background: #dc3545; }
     </style>
@@ -39,6 +50,19 @@
     </header>
 
     <main class="esp-container">
+        <section class="esp-panel" aria-labelledby="tituloBandejaHorarios">
+            <div class="inbox-header">
+                <div>
+                    <h2 id="tituloBandejaHorarios">Bandeja de horarios</h2>
+                    <p id="subtituloBandejaHorarios">Alertas de asignación enviadas por secretarios de su área.</p>
+                </div>
+                <span id="badgeNotificacionesPendientes" class="inbox-badge vacio" aria-live="polite">0</span>
+            </div>
+            <div id="listaNotificacionesHorario" style="margin-top:15px">
+                <p>Cargando notificaciones...</p>
+            </div>
+        </section>
+
         <section class="esp-panel">
             <h2 id="tituloBienvenida">Citas agendadas con pacientes</h2>
             <p id="subtituloEsp">Consulte y marque como completadas las atenciones realizadas.</p>

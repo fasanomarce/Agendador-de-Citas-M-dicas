@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consultar Horarios</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <header class="header">
+        <h1 class="header_logo">Agendador de Citas</h1>
+
+        <nav class="nav" id="mainNav" aria-label="Navegación principal">
+            <ul class="nav__list">
+                <li class="nav__item"><a href="MenuCitas.html" class="nav__link">Menú Principal</a></li>
+                <li class="nav__item"><a href="ConsultarCitas.html" class="nav__link">Consultar Citas</a></li>
+                <li class="nav__item"><a href="AsignarHorario.html" class="nav__link">Asignar Horario</a></li>
+                <li class="nav__item"><a href="Perfil.html" class="nav__link">Mi Perfil</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="form-container container-consultas">
+            <h2>Consultar Horarios</h2>
+            <p>Seleccione una especialidad y un especialista para visualizar sus bloques de disponibilidad.</p>
+
+            <fieldset>
+                <legend>Panel de búsqueda</legend>
+
+                <label for="filtroEspecialidad">Especialidad</label><br>
+                <select id="filtroEspecialidad" name="filtroEspecialidad" required>
+                    <option value="">Seleccione una especialidad...</option>
+                </select><br>
+
+                <label for="filtroEspecialista">Especialista</label><br>
+                <select id="filtroEspecialista" name="filtroEspecialista" disabled required>
+                    <option value="">Seleccione un especialista...</option>
+                </select><br>
+
+                <label>Vista de resultados</label><br>
+                <button type="button" id="btnVerSemana">Ver Toda la Semana</button>
+                <button type="button" id="btnFiltrarDia">Filtrar por Día</button><br>
+
+                <select id="filtroDia" name="filtroDia" style="display: none;">
+                    <option value="">Seleccione un día...</option>
+                    <option value="lunes">Lunes</option>
+                    <option value="martes">Martes</option>
+                    <option value="miercoles">Miércoles</option>
+                    <option value="jueves">Jueves</option>
+                    <option value="viernes">Viernes</option>
+                    <option value="sabado">Sábado</option>
+                    <option value="domingo">Domingo</option>
+                </select>
+            </fieldset>
+
+            <div id="contenedorHorarios" class="dashboard-grid" aria-live="polite">
+                <p id="mensajeEstadoHorarios" class="mensaje-vacio">
+                    Seleccione una especialidad y un especialista para consultar horarios.
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <script src="../ViewHandling/ConsultarHorariosView.js"></script>
+</body>
+</html>

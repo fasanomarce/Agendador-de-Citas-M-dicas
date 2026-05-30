@@ -5,7 +5,7 @@
       "nombre": "Juan",
       "apellido": "Pérez",
       "correo": "juan@clinica.com",
-      "contrasena": "MTIz",
+      "contrasena": "123",
       "especialidad": "Cardiología",
       "rol": "Médico Titular",
       "color": "2F4F4F"
@@ -15,7 +15,7 @@
       "nombre": "María",
       "apellido": "Gómez",
       "correo": "maria@clinica.com",
-      "contrasena": "MTIz",
+      "contrasena": "123",
       "especialidad": "Pediatría",
       "rol": "Especialista Asociada",
       "color": "B22222"
@@ -25,7 +25,7 @@
       "nombre": "Carlos",
       "apellido": "López",
       "correo": "carlos@clinica.com",
-      "contrasena": "MTIz",
+      "contrasena": "123",
       "especialidad": "Dermatología",
       "rol": "Médico Titular",
       "color": "008000"
@@ -35,7 +35,7 @@
       "nombre": "Ana",
       "apellido": "Silva",
       "correo": "ana.silva@clinica.com",
-      "contrasena": "MTIz",
+      "contrasena": "123",
       "especialidad": "Odontología",
       "rol": "Médico Odontocirujano",
       "color": "4682B4"
@@ -45,7 +45,7 @@
       "nombre": "Luis",
       "apellido": "Torres",
       "correo": "luist@clinica.com",
-      "contrasena": "MTIz",
+      "contrasena": "123",
       "especialidad": "Neurología",
       "rol": "Jefe de Departamento",
       "color": "696969"
@@ -55,7 +55,7 @@
       "nombre": "jose",
       "apellido": "jose",
       "correo": "correo@gmail.com",
-      "contrasena": "MTIz",
+      "contrasena": "123",
       "especialidad": "Pediatría",
       "rol": "doc",
       "color": "B22222",
@@ -66,7 +66,7 @@
       "nombre": "FFFFFFF",
       "apellido": "AAAAAAA",
       "correo": "luisdfafasdasd@gmail.com",
-      "contrasena": "Z2dnZ2c=",
+      "contrasena": "ggggg",
       "especialidad": "Cardiología",
       "rol": "Titulo",
       "color": "2F4F4F",
@@ -79,7 +79,7 @@
       "nombre": "Carlos",
       "apellido": "Ruiz",
       "correo": "c.ruiz@clinica.com",
-      "contrasena": "MTIz",
+      "contrasena": "123",
       "areaAsignada": "Cardiología",
       "rol": "Recepción Dpto.",
       "color": "4682B4"
@@ -89,7 +89,7 @@
       "nombre": "Ana",
       "apellido": "Beltrán",
       "correo": "a.belt@clinica.com",
-      "contrasena": "MTIz",
+      "contrasena": "123",
       "areaAsignada": "Pediatría",
       "rol": "Asistente Pediátrico",
       "color": "4682B4"
@@ -99,7 +99,7 @@
       "nombre": "Pedro",
       "apellido": "Alonso",
       "correo": "pedro@clinica.com",
-      "contrasena": "MTIz",
+      "contrasena": "123",
       "areaAsignada": "Neurología",
       "rol": "Recepción y Archivos",
       "color": "4682B4"
@@ -109,7 +109,7 @@
       "nombre": "Angelo",
       "apellido": "Fasano",
       "correo": "bfasano2@gmail.com",
-      "contrasena": "Q2FyaXBlLTE0MQ==",
+      "contrasena": "Caripe-141",
       "areaAsignada": "Odontología",
       "rol": "Recepción",
       "color": "4682B4",

@@ -22,33 +22,26 @@ class PerfilSecretarioView {
 
         document.getElementById('buscadorPaciente').addEventListener('input', () => this.filtrarPacientes());
         document.getElementById('formPaciente').addEventListener('submit', (e) => this.guardarPaciente(e));
-        document.getElementById('formBloque').addEventListener('submit', (e) => this.asignarBloque(e));
-        document.getElementById('selectEspecialista').addEventListener('change', (e) => {
-            const opt = e.target.selectedOptions[0];
-            if (opt && opt.dataset.especialidad) {
-                document.getElementById('bloqueEspecialidad').value = opt.dataset.especialidad;
-            }
-        });
 
         this.cargarPacientes();
         this.cargarCitas();
-        this.cargarEspecialistas();
-        this.cargarBloques();
     }
 
     mostrarToast(msg, error = false) {
         const t = document.getElementById('toast');
         t.innerText = msg;
         t.className = error ? 'toast-notificacion error' : 'toast-notificacion';
-        const displayType = 'block';
-        t.style.display = displayType;
+        t.style.display = 'block';
         t.style.opacity = '1';
         t.style.transition = 'opacity 0.5s ease';
 
         if (t._hideTimeout) clearTimeout(t._hideTimeout);
         if (t._removeTimeout) clearTimeout(t._removeTimeout);
 
-        t._hideTimeout = setTimeout(() => { t.style.opacity = '0'; t._removeTimeout = setTimeout(() => { t.style.display = 'none'; }, 600); }, 3000);
+        t._hideTimeout = setTimeout(() => {
+            t.style.opacity = '0';
+            t._removeTimeout = setTimeout(() => { t.style.display = 'none'; }, 600);
+        }, 3000);
     }
 
     cargarPacientes() {
@@ -171,62 +164,6 @@ class PerfilSecretarioView {
                 } else {
                     this.mostrarToast(r.body.error || 'Error.', true);
                 }
-            });
-    }
-
-    cargarEspecialistas() {
-        fetch(`${API_BASE}/secretario/especialistas`)
-            .then(res => res.json())
-            .then(lista => {
-                const sel = document.getElementById('selectEspecialista');
-                sel.innerHTML = '<option value="">Seleccione médico...</option>';
-                lista.forEach(e => {
-                    const opt = document.createElement('option');
-                    opt.value = e.id;
-                    opt.dataset.especialidad = e.especialidad;
-                    opt.innerText = `Dr/a. ${e.nombre} ${e.apellido} (${e.especialidad})`;
-                    sel.appendChild(opt);
-                });
-            });
-    }
-
-    asignarBloque(e) {
-        e.preventDefault();
-        const payload = {
-            modificadoPor: this.usuarioActivo.id,
-            rolModificadoPor: 'Secretario',
-            especialistaId: document.getElementById('selectEspecialista').value,
-            especialidad: document.getElementById('bloqueEspecialidad').value,
-            fecha: document.getElementById('bloqueFecha').value,
-            horaInicio: document.getElementById('bloqueInicio').value,
-            horaFin: document.getElementById('bloqueFin').value
-        };
-
-        fetch(`${API_BASE}/secretario/bloques`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        })
-            .then(res => res.json().then(b => ({ status: res.status, body: b })))
-            .then(r => {
-                if (r.status === 201) {
-                    this.mostrarToast(r.body.mensaje);
-                    document.getElementById('formBloque').reset();
-                    this.cargarBloques();
-                } else {
-                    this.mostrarToast(r.body.error || 'Error.', true);
-                }
-            });
-    }
-
-    cargarBloques() {
-        fetch(`${API_BASE}/secretario/bloques`)
-            .then(res => res.json())
-            .then(bloques => {
-                const ul = document.getElementById('listaBloques');
-                ul.innerHTML = bloques.map(b =>
-                    `<li style="padding:8px 0;border-bottom:1px solid #eee">${b.especialistaNombre} — ${b.especialidad} | ${b.fecha} ${b.horaInicio}-${b.horaFin}</li>`
-                ).join('') || '<li>Sin bloques asignados.</li>';
             });
     }
 

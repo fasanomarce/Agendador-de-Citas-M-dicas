@@ -1,4 +1,6 @@
-const store = require('../utils/UsuarioStore');
+const store = require('../utils/usuarioStore');
+
+const LIMITE_MAXIMO_CITAS = 100;
 
 function etiquetaDoctor(esp) {
     return `Dr/a. ${esp.nombre} ${esp.apellido}`;
@@ -62,6 +64,12 @@ class CitaController {
                 } catch {
                     citas = [];
                 }
+            }
+
+            if (citas.length >= LIMITE_MAXIMO_CITAS) {
+                return res.status(400).json({
+                    error: `El sistema alcanzó el límite máximo de ${LIMITE_MAXIMO_CITAS} citas registradas.`
+                });
             }
 
             if (nuevaCita.pacienteId) {

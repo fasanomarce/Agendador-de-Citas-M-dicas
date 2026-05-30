@@ -1,4 +1,5 @@
 const Paciente = require('../Model/Paciente');
+const Especialidad = require('../Model/Especialidad');
 const store = require('../utils/usuarioStore');
 
 class AdminController {
@@ -122,6 +123,43 @@ class AdminController {
 
         if (creadorRol !== 'Administrador') {
             return res.status(403).json({ error: 'Acceso denegado. Solo administradores pueden configurar especialidades.' });
+        }
+        const nuevaEspecialidad = new Especialidad(
+            nombre ? store.sanitizar(nombre.trim()) : null,
+            codigo ? store.sanitizar(codigo.trim()) : null,
+            ubicacion ? store.sanitizar(ubicacion.trim()) : null,
+            horario ? store.sanitizar(horario.trim()) : null,
+            descripcion ? store.sanitizar(descripcion.trim()) : null,
+            doctoresAsignados || []
+        );
+        /* Si quieres aplicar la regla de "Obligatoriamente debe tener 1 doctor",  descomenta estas líneas:
+        
+        if (nuevaEspecialidad.doctoresAsignados.length === 0) {
+            return res.status(400).json({ error: 'Debe asignar al menos un especialista a esta área.' });
+        }
+        */
+        especialidades[nuevaEspecialidad.nombre] = {
+            codigo: nuevaEspecialidad.codigo,
+            ubicacion: nuevaEspecialidad.ubicacion,
+            horario: nuevaEspecialidad.horario,
+            descripcion: nuevaEspecialidad.descripcion,
+            doctoresAsignados: nuevaEspecialidad.doctoresAsignados
+        };
+            store.guardarEspecialidades(especialidades);
+
+            return res.status(201).json({
+                mensaje: `Especialidad "${nuevaEspecialidad.nombre}" registrada correctamente.`,
+                especialidad: especialidades[nuevaEspecialidad.nombre]
+            });
+
+        if (!nuevaEspecialidad.esValida()) {
+            return res.status(400).json({ error: 'Complete todos los campos de la especialidad.' });
+        }
+
+        const especialidades = store.leerEspecialidades();
+
+        if (especialidades[nuevaEspecialidad.nombre]) {
+            return res.status(400).json({ error: 'Esta especialidad médica ya existe en el sistema.' });
         }
 
         if (!nombre || !codigo || !ubicacion || !horario || !descripcion) {

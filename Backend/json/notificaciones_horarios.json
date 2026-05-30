@@ -1,1 +1,12 @@
-[]
+[
+  {
+    "id": 1,
+    "especialistaId": 1,
+    "secretarioId": 3,
+    "secretarioNombre": "Carlos Ruiz",
+    "bloqueId": 1,
+    "mensaje": "Se asignó un bloque horario (lunes, 09:32–10:34) registrado por Carlos Ruiz (ID 3).",
+    "leida": false,
+    "fechaRegistro": "2026-05-30T12:34:29.221Z"
+  }
+]

@@ -1,3 +1,17 @@
 {
-  "horarios": []
+  "horarios": [
+    {
+      "id": 1,
+      "especialistaId": 1,
+      "diaSemana": "lunes",
+      "horaInicio": "09:32",
+      "horaFin": "10:34",
+      "especialidad": "Cardiología",
+      "duracionMinutos": 62,
+      "inicioMinutos": 572,
+      "finMinutos": 634,
+      "secretarioId": 3,
+      "secretarioNombre": "Carlos Ruiz"
+    }
+  ]
 }

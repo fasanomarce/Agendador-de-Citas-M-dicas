@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asignar Horario</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <header class="header">
+        <h1 class="header_logo">Agendador de Citas</h1>
+
+        <nav class="nav" id="mainNav" aria-label="Navegación principal">
+            <ul class="nav__list">
+                <li class="nav__item"><a href="MenuCitas.html" class="nav__link">Menú Principal</a></li>
+                <li class="nav__item"><a href="ConsultarCitas.html" class="nav__link">Consultar Citas</a></li>
+                <li class="nav__item"><a href="Perfil.html" class="nav__link">Mi Perfil</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="form-container">
+            <p>Configure los bloques de disponibilidad horaria para un especialista.</p>
+
+            <section id="seccionEspecialista" class="paso activo" aria-labelledby="tituloSeccionA">
+                <fieldset>
+                    <legend id="tituloSeccionA">Paso 1: Selección de Especialista</legend>
+
+                    <label for="especialista">Especialista</label><br>
+                    <select id="especialista" name="especialista" required>
+                        <option value="">Seleccione un especialista...</option>
+                    </select>
+                </fieldset>
+
+                <button type="button" id="btnContinuarEspecialista">Continuar</button>
+            </section>
+
+            <section id="seccionFormularioBloques" class="paso" aria-labelledby="tituloSeccionB">
+                <fieldset>
+                    <legend id="tituloSeccionB">Paso 2: Formulario de Bloques</legend>
+
+                    <form id="formularioBloquesHorario" novalidate>
+                        <label for="diaSemana">Día de la semana</label><br>
+                        <select id="diaSemana" name="diaSemana" required>
+                            <option value="">Seleccione un día...</option>
+                            <option value="lunes">Lunes</option>
+                            <option value="martes">Martes</option>
+                            <option value="miercoles">Miércoles</option>
+                            <option value="jueves">Jueves</option>
+                            <option value="viernes">Viernes</option>
+                            <option value="sabado">Sábado</option>
+                            <option value="domingo">Domingo</option>
+                        </select><br>
+
+                        <label for="horaInicio">Hora de inicio</label><br>
+                        <input
+                            type="time"
+                            id="horaInicio"
+                            name="horaInicio"
+                            min="05:00"
+                            max="23:00"
+                            required
+                        ><br>
+
+                        <label for="horaFin">Hora de fin</label><br>
+                        <input
+                            type="time"
+                            id="horaFin"
+                            name="horaFin"
+                            min="05:00"
+                            max="23:00"
+                            required
+                        ><br>
+
+                        <button type="submit" id="btnGuardarHorario">Guardar bloque horario</button>
+                    </form>
+                </fieldset>
+            </section>
+        </div>
+    </main>
+
+    <!-- Modales de flujo (ocultos por defecto vía .modal-overlay) -->
+
+    <div id="modalSinBloques" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalSinBloquesTitulo" aria-hidden="true">
+        <div class="modal-notion">
+            <button type="button" class="modal-close" data-cerrar-modal="modalSinBloques" aria-label="Cerrar">×</button>
+            <div class="modal-notion-layout">
+                <div class="modal-notion-left">
+                    <h2 id="modalSinBloquesTitulo" class="notion-title">Sin bloques disponibles</h2>
+                    <div class="notion-content">
+                        <p>El especialista no tiene bloques disponibles para asignar en este momento.</p>
+                    </div>
+                    <div class="notion-actions">
+                        <button type="button" id="btnModificarHorarioSinBloques" class="btn-reservar-notion">Modificar Horario</button>
+                        <button type="button" class="btn-reservar-notion" data-cerrar-modal="modalSinBloques">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalAlertaOcupado" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalAlertaOcupadoTitulo" aria-hidden="true">
+        <div class="modal-notion">
+            <button type="button" class="modal-close" data-cerrar-modal="modalAlertaOcupado" aria-label="Cerrar">×</button>
+            <div class="modal-notion-layout">
+                <div class="modal-notion-left">
+                    <h2 id="modalAlertaOcupadoTitulo" class="notion-title">Bloques ocupados</h2>
+                    <div class="notion-content">
+                        <p>El especialista tiene bloques ocupados.</p>
+                    </div>
+                    <div class="notion-actions">
+                        <button type="button" class="btn-reservar-notion" data-cerrar-modal="modalAlertaOcupado">Continuar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalConflictoHorario" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalConflictoTitulo" aria-hidden="true">
+        <div class="modal-notion">
+            <button type="button" class="modal-close" data-cerrar-modal="modalConflictoHorario" aria-label="Cerrar">×</button>
+            <div class="modal-notion-layout">
+                <div class="modal-notion-left">
+                    <h2 id="modalConflictoTitulo" class="notion-title">Conflicto de horarios</h2>
+                    <div class="notion-content">
+                        <p>Los horarios seleccionados entran en conflicto con bloques ya registrados para este especialista.</p>
+                    </div>
+                    <div class="notion-actions">
+                        <button type="button" class="btn-reservar-notion" data-cerrar-modal="modalConflictoHorario">Revisar horarios</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalConfirmacion" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalConfirmacionTitulo" aria-hidden="true">
+        <div class="modal-notion">
+            <button type="button" class="modal-close" data-cerrar-modal="modalConfirmacion" aria-label="Cerrar">×</button>
+            <div class="modal-notion-layout">
+                <div class="modal-notion-left">
+                    <h2 id="modalConfirmacionTitulo" class="notion-title">Confirmar asignación</h2>
+                    <div class="notion-content">
+                        <p>Horario válido. ¿Desea asignar este horario?</p>
+                        <p id="modalConfirmacionResumen"></p>
+                    </div>
+                    <div class="notion-actions">
+                        <button type="button" id="btnConfirmarAsignacion" class="btn-reservar-notion">Sí, asignar</button>
+                        <button type="button" class="btn-reservar-notion" data-cerrar-modal="modalConfirmacion">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalExitoModificar" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalExitoModificarTitulo" aria-hidden="true">
+        <div class="modal-notion">
+            <button type="button" class="modal-close" data-cerrar-modal="modalExitoModificar" aria-label="Cerrar">×</button>
+            <div class="modal-notion-layout">
+                <div class="modal-notion-left">
+                    <h2 id="modalExitoModificarTitulo" class="notion-title">Operación exitosa</h2>
+                    <div class="notion-content">
+                        <p>¡Operación completada exitosamente! ¿Desea realizar modificaciones?</p>
+                    </div>
+                    <div class="notion-actions">
+                        <button type="button" id="btnRealizarModificaciones" class="btn-reservar-notion">Sí, modificar</button>
+                        <button type="button" id="btnFinalizarAsignacion" class="btn-reservar-notion">No, finalizar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalExitoHorario" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalExitoTitulo" aria-hidden="true">
+        <div class="modal-notion">
+            <button type="button" class="modal-close" data-cerrar-modal="modalExitoHorario" aria-label="Cerrar">×</button>
+            <div class="modal-notion-layout">
+                <div class="modal-notion-left">
+                    <h2 id="modalExitoTitulo" class="notion-title">Operación exitosa</h2>
+                    <div class="notion-content">
+                        <p>El bloque horario se registró correctamente.</p>
+                    </div>
+                    <div class="notion-actions">
+                        <button type="button" class="btn-reservar-notion" data-cerrar-modal="modalExitoHorario">Aceptar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../ViewHandling/AsignarHorarioView.js"></script>
+</body>
+</html>

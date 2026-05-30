@@ -91,6 +91,19 @@ class PerfilAdminView {
             })
             .catch(() => this.mostrarToast('Error de conexión.', true));
     }
+    cargarDoctoresEnSelect() {
+        fetch(`${API_BASE}/admin/doctores`)
+            .then(res => res.json())
+            .then(lista => {
+                const opts = '<option value="">Seleccione...</option>' +
+                    lista.map(d => `<option value="${d.id}">Dr/a. ${d.nombre} ${d.apellido} (${d.especialidad})</option>`).join('');
+                document.getElementById('espDoctorAsignado').innerHTML = opts;
+            })  
+            .catch(() => {
+                document.getElementById('espDoctorAsignado').innerHTML = '<option value="">Error cargando doctores</option>';
+            }
+        );
+    }
 
     registrarEspecialidad(e) {
         e.preventDefault();
